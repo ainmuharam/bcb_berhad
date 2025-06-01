@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success - Clock In/Out</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .success-message {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 18px;
+            background-color: green;
+            color: white;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Success!</h1>
+    <div class="success-message" id="successMessage"></div>
+    <button onclick="window.location.href='index.php'">Return to Home</button>
+
+    <script>
+        // Get the employee ID from the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const empId = urlParams.get('emp_id');
+        const action = urlParams.get('action');
+
+        // Display the success message
+        document.getElementById('successMessage').innerText = `You have successfully ${action} with Employee ID: ${empId}`;
+    </script>
+</body>
+</html>

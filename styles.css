@@ -1,0 +1,144 @@
+body {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center; 
+    align-items: center; /* Center elements horizontally */
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    background-color: #ffffff;
+}
+
+body.login {
+    background-color: #d9f7d9; /* Soft green background */
+}
+
+.login-container {
+    background-color: rgb(255, 255, 255);
+    padding: 50px; /* Increased padding for a larger container */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
+    width: 90%; /* Make the container responsive */
+    max-width: 600px; /* Set a maximum width */
+    text-align: center;
+}
+
+.logo {
+    width: 150px; /* Adjust the size of the logo */
+    margin-bottom: 20px;
+}
+
+@font-face {
+    font-family: 'TheNextFont'; /* Replace with the name you want to use */
+    src: url('font/The Next Font.ttf') format('truetype'); 
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+.font-heading{
+    text-align: center;
+    margin-bottom: 20px;
+    font-family:'TheNextFont';
+    font-size: 3.5rem;
+    color:#446f44;
+    margin-bottom: 20px;
+    margin-top: 4px;
+
+}
+
+.form-group {
+    display: flex; /* Use flexbox for alignment */
+    justify-content: space-between; /* Space between label and input */
+    margin-bottom: 30px; /* Space between form groups */
+    align-items: center; /* Center items vertically */
+}
+
+label {
+    flex: 0.5; /* Allow label to take up space */
+    margin-right: 10px; /* Space between label and input */
+    text-align: left; /* Align text to the left */
+    color: #555; /* Label color */
+}
+
+input[type="email"],
+input[type="password"],
+select {
+    flex: 2; /* Allow input to take up more space */
+    padding: 10px; /* Padding for inputs */
+    border: 1px solid #ccc; /* Border for inputs */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.forgot-password-container {
+    text-align: right; /* Align the link to the right */
+    margin-bottom: 30px; /* Space below the link */
+}
+
+.forgot-password {
+    color: #103b6a; 
+    text-decoration: none; 
+}
+
+.forgot-password:hover {
+    color: #0ecae7;
+
+}
+
+button {
+    width: 100%;
+    padding: 20px;
+    background-color: #2d642d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #498249;
+}
+
+.error {
+    color: rgb(158, 32, 32);
+    margin-bottom: 15px;
+}
+
+
+.container {
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="date"] {
+    padding: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+}
+
+.big-button {
+    padding: 15px 30px; /* Adjust padding for size */
+    font-size: 20px; /* Adjust font size */
+    background-color: #446f44; /* Green background */
+    color: white; /* White text */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+.big-button:hover {
+    background-color: #498249; /* Darker green on hover */
+}
+
+
