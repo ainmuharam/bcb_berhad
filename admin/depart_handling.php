@@ -11,14 +11,14 @@ class Department {
     }
 
     public function getActiveDepartments() {
-        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE status = 1";
+        $query = "SELECT DISTINCT COUNT(*) as total FROM " . $this->table_name . " WHERE status = 1";
         $stmt = $this->db->conn->prepare($query);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
         return $result['total'];
     }
     public function getActiveDepartmentsName() {
-        $sql = "SELECT department_id, department_name FROM departments WHERE status = 1";
+        $sql = "SELECT DISTINCT department_id, department_name FROM departments WHERE status = 1";
         $result = $this->db->conn->query($sql); 
 
         $departments = [];
@@ -30,7 +30,7 @@ class Department {
 
 
     public function getDepartments($searchQuery = null) {
-        $query = "SELECT department_id, department_name, created_at, status FROM " . $this->table_name;
+        $query = "SELECT DISTINCT department_id, department_name, created_at, status FROM " . $this->table_name;
 
         if (!empty($searchQuery)) {
             $query .= " WHERE department_id LIKE ? OR department_name LIKE ?";
@@ -66,7 +66,7 @@ class Department {
     // Function to add a new department
     public function addDepartment($departmentId, $departmentName) {
         // Check if the department ID already exists
-        $stmt = $this->db->conn->prepare("SELECT COUNT(*) FROM " . $this->table_name . " WHERE department_id = ?");
+        $stmt = $this->db->conn->prepare("SELECT DISTINCT COUNT(*) FROM " . $this->table_name . " WHERE department_id = ?");
         $stmt->bind_param("i", $departmentId);
         $stmt->execute();
         $stmt->bind_result($count);
@@ -76,7 +76,7 @@ class Department {
         if ($count > 0) {
             return "Error: Department ID '$departmentId' already exists.";
         }
-        $stmt = $this->db->conn->prepare("SELECT COUNT(*) FROM " . $this->table_name . " WHERE department_name = ?");
+        $stmt = $this->db->conn->prepare("SELECT DISTINCT COUNT(*) FROM " . $this->table_name . " WHERE department_name = ?");
         $stmt->bind_param("s", $departmentName);
         $stmt->execute();
         $stmt->bind_result($count);
