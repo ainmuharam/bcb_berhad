@@ -1,5 +1,5 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'].'/bcb_berhad/time_session.php';
+include_once __DIR__ . '/../database.php';
 
 $session = new SessionManager(30);
 $session->checkInactivity();
