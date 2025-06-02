@@ -1,6 +1,6 @@
 <?php
 session_start();
-include_once 'database.php';
+include_once __DIR__ . '/database.php';
 
 if (!isset($_SESSION['pending_admin_session']['email'])) {
     $error = "Session expired or missing email. Please log in again.";
