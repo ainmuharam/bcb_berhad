@@ -2,6 +2,13 @@
 session_start();
 include_once __DIR__ . '/database.php';
 
+require 'PHPMailer/src/PHPMailer.php';
+require 'PHPMailer/src/SMTP.php';
+require 'PHPMailer/src/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 if (!isset($_SESSION['pending_admin_session']['email'])) {
     $error = "Session expired or missing email. Please log in again.";
     header("Location: login.php");
@@ -14,19 +21,33 @@ if (isset($_POST['send_otp'])) {
     $otp = rand(100000, 999999);
     $_SESSION['admin_otp'] = $otp;
 
-    // Send email
     $subject = "OTP Code for Verification";
-    $message = "Dear Admin,\n\nYour OTP code is: $otp\n\nPlease enter it to access the dashboard.";
-    $headers = "From: muharamnurain@gmail.com";
+    $message = "Dear Admin,\n\nYour OTP code is: $otp\n\nDo not share your OTP code.";
 
-    if (mail($adminEmail, $subject, $message, $headers)) {
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = 'smtp.gmail.com';
+        $mail->SMTPAuth   = true;
+        $mail->Username   = 'muharamnurain@gmail.com';  // your Gmail address
+        $mail->Password   = 'chzxxjooufibcbss';  // your Gmail app password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = 587;
+
+        $mail->setFrom('muharamnurain@gmail.com', 'BCB Admin');
+        $mail->addAddress($adminEmail);
+
+        $mail->Subject = $subject;
+        $mail->Body    = $message;
+
+        $mail->send();
         $success = "OTP has been sent to your email.";
-    } else {
-        $error = "Failed to send OTP. Please try again.";
+    } catch (Exception $e) {
+        $error = "Failed to send OTP. Mailer Error: {$mail->ErrorInfo}";
     }
 }
 
-// Verify OTP
 if (isset($_POST['verify_otp'])) {
     $enteredOtp = $_POST['otp'] ?? '';
 
