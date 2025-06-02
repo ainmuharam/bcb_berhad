@@ -159,24 +159,25 @@ public function updateUser($id, $name, $departmentId, $email) {
 
     public function getTotalEmployees($date) {
         if (empty($date)) {
-            $date = date('Y-m-d'); // Use current date if not passed or empty
+            $date = date('Y-m-d');
         }
-    
+
         $stmt = $this->db->prepare("
-            SELECT COUNT(*) as total 
+            SELECT COUNT(DISTINCT emp_id) as total 
             FROM users 
             WHERE created_at <= ? AND (deactivation_date IS NULL OR deactivation_date > ?)
         ");
+
         if ($stmt === false) {
             throw new Exception("Prepare failed: " . $this->db->error);
         }
-    
+
         $stmt->bind_param("ss", $date, $date);
         $stmt->execute();
         $stmt->bind_result($total);
         $stmt->fetch();
         $stmt->close();
-    
+
         return $total;
     }
     
@@ -249,52 +250,54 @@ public function updateUser($id, $name, $departmentId, $email) {
         ];
     }
     
-    public function getAbsentEmployees($selectedDate, $selectedDepartment = '') {
-        $query = "
-            SELECT u.emp_id, u.name, u.email, d.department_name
-            FROM users u
-            JOIN departments d ON u.department_id = d.department_id
-            WHERE u.emp_id NOT IN (
-                SELECT emp_id
-                FROM daily_summary
-                WHERE attendance_date = ?
-            )
-            AND u.emp_id NOT IN (
-                SELECT emp_id
-                FROM annual_leave
-                WHERE leave_date = ?
-            )
-            AND (u.deactivation_date IS NULL OR u.deactivation_date > ?)
-            AND u.created_at <= ?";
-    
-        // If a department is selected, add filtering
-        if (!empty($selectedDepartment)) {
-            $query .= " AND u.department_id = ?";
+        public function getAbsentEmployees($selectedDate, $selectedDepartment = '') {
+            $query = "
+                SELECT DISTINCT u.emp_id, u.name, u.email, d.department_name
+                FROM users u
+                JOIN departments d ON u.department_id = d.department_id
+                WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM daily_summary ds
+                    WHERE ds.emp_id = u.emp_id
+                    AND ds.attendance_date = ?
+                )
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM annual_leave al
+                    WHERE al.emp_id = u.emp_id
+                    AND al.leave_date = ?
+                )
+                AND (u.deactivation_date IS NULL OR u.deactivation_date > ?)
+                AND u.created_at <= ?
+            ";
+
+            if (!empty($selectedDepartment)) {
+                $query .= " AND u.department_id = ?";
+            }
+
+            $stmt = $this->db->prepare($query);
+
+            if ($stmt === false) {
+                throw new Exception("Prepare failed: " . $this->db->error);
+            }
+
+            if (!empty($selectedDepartment)) {
+                $stmt->bind_param('sssss', $selectedDate, $selectedDate, $selectedDate, $selectedDate, $selectedDepartment);
+            } else {
+                $stmt->bind_param('ssss', $selectedDate, $selectedDate, $selectedDate, $selectedDate);
+            }
+
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $absentEmployees = [];
+            while ($row = $result->fetch_assoc()) {
+                $absentEmployees[$row['emp_id']] = $row; // Use emp_id as key to prevent duplicates
+            }
+
+            return array_values($absentEmployees); // re-index
         }
-    
-        $stmt = $this->db->prepare($query);
-    
-        if ($stmt === false) {
-            throw new Exception("Prepare failed: " . $this->db->error);
-        }
-    
-        // Binding parameters dynamically based on department selection
-        if (!empty($selectedDepartment)) {
-            $stmt->bind_param('sssss', $selectedDate, $selectedDate, $selectedDate, $selectedDate, $selectedDepartment);
-        } else {
-            $stmt->bind_param('ssss', $selectedDate, $selectedDate, $selectedDate, $selectedDate);
-        }
-    
-        $stmt->execute();
-        $result = $stmt->get_result();
-    
-        $absentEmployees = [];
-        while ($row = $result->fetch_assoc()) {
-            $absentEmployees[] = $row;
-        }
-    
-        return $absentEmployees;
-    }
+
 
     public function getAttendanceRecordsByFilter($date = '', $department = '') {
     $query = "
