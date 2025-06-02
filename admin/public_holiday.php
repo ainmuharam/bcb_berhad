@@ -1,6 +1,6 @@
 <?php
 include_once 'admin_session.php';
-include_once $_SERVER['DOCUMENT_ROOT'].'/bcb_berhad/database.php';
+include_once __DIR__ . '/../database.php';
 
 $database = new Database();
 $db = $database->conn;
@@ -11,7 +11,7 @@ $month = date('m', strtotime($selectedMonth));
 $year = date('Y', strtotime($selectedMonth));
 
 // Query to fetch the holidays for the selected month
-$holidayQuery = "SELECT holiday_date, holiday_name FROM public_holiday 
+$holidayQuery = "SELECT DISTINCT holiday_date, holiday_name FROM public_holiday 
                  WHERE DATE_FORMAT(holiday_date, '%Y-%m') = ?";
 
 $stmt = $db->prepare($holidayQuery);
