@@ -1,13 +1,12 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+$to = "ain.na308@gmail.com"; // ✅ Replace with your actual email
+$subject = "Test Email from PHP Server";
+$message = "This is a test email to verify if mail() is working on your server.";
+$headers = "From: muharamnurain@gmail.com";
 
-include 'database.php';
-
-try {
-    $db = new Database();
-    echo "Database connected successfully.";
-} catch (Exception $e) {
-    echo "Database connection failed: " . $e->getMessage();
+if (mail($to, $subject, $message, $headers)) {
+    echo "Email sent successfully to $to";
+} else {
+    echo " Failed to send email.";
 }
 ?>
