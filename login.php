@@ -3,9 +3,10 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 session_start();
+require_once 'database.php';
+
 include_once 'admin/depart_handling.php';
 include_once 'admin/register_handling.php';
-include_once 'database.php';
 include_once 'login_handling.php';
 
 $db = new Database(); 
