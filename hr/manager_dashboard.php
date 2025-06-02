@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'manager_session.php';
 include '../admin/register_handling.php';
 include '../admin/depart_handling.php';
