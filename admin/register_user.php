@@ -13,7 +13,7 @@ $message = "";
 
 $conn = $database->conn;
 
-$sql = "SELECT COUNT(*) AS total_employees FROM users WHERE deactivation_date IS NULL OR deactivation_date > CURDATE()";
+$sql = "SELECT COUNT(DISTINCT emp_id) AS total_employees FROM users WHERE deactivation_date IS NULL OR deactivation_date > CURDATE()";
 $result = $conn->query($sql);
 
 if ($result === false) {
@@ -24,7 +24,7 @@ $row = $result->fetch_assoc();
 $totalEmployees = $row['total_employees'];
 
 $sql = "
-    SELECT 
+    SELECT DISTINCT
         u.emp_id, 
         u.name, 
         u.email, 
