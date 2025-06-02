@@ -1,6 +1,6 @@
 <?php
 include_once __DIR__ . '/../database.php';
-include_once __DIR__ . '/time_session.php';
+include_once __DIR__ . '/../time_session.php';
 
 $session = new SessionManager(30);
 $session->checkInactivity();
