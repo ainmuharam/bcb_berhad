@@ -44,13 +44,16 @@ public function getAllAttendanceRecords($departmentId = null) {
 
 public function getAbsentEmployees($selectedDate, $selectedDepartment = null) {
     $query = "
-        SELECT u.emp_id, u.name, u.email, d.department_name
+        SELECT DISTINCT u.emp_id, u.name, u.email, d.department_name
         FROM users u
         JOIN departments d ON u.department_id = d.department_id
         WHERE u.emp_id NOT IN (
             SELECT emp_id
             FROM daily_summary
             WHERE attendance_date = ?
+            AND emp_id IN (
+                SELECT emp_id FROM users WHERE department_id = ?
+            )
         )
         AND u.emp_id NOT IN (
             SELECT emp_id
@@ -68,7 +71,7 @@ public function getAbsentEmployees($selectedDate, $selectedDepartment = null) {
         throw new Exception("Prepare failed: " . $this->conn->error);
     }
 
-    $stmt->bind_param("sssss", $selectedDate, $selectedDate, $selectedDate, $selectedDate, $selectedDepartment);
+    $stmt->bind_param("ssssss", $selectedDate, $selectedDepartment, $selectedDate, $selectedDate, $selectedDate, $selectedDepartment);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -79,6 +82,7 @@ public function getAbsentEmployees($selectedDate, $selectedDepartment = null) {
 
     return $absentEmployees;
 }
+
 public function getAnnualLeaves($selectedDate, $selectedDepartment) {
     $query = "
         SELECT u.emp_id, u.name, u.email, al.leave_date
