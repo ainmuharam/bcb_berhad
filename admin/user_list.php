@@ -14,7 +14,7 @@ $user = new User($db);
 $department = new Department($db); 
 $empId = $_GET['id'] ?? null;
 
-$sql = "SELECT * FROM users WHERE status = 1";  // Only fetch active employees
+$sql = "SELECT DISTINCT * FROM users WHERE status = 1";  // Only fetch active employees
 $result = $db->conn->query($sql);
 
 if ($result->num_rows > 0) {
