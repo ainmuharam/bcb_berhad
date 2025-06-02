@@ -1,6 +1,6 @@
 <?php
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/bcb_berhad/database.php';
+include_once('/var/www/ain/bcb_berhad/database.php');
 
 class Department {
     private $db;
