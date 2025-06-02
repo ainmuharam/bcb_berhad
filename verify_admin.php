@@ -88,7 +88,9 @@ if (isset($_POST['verify_otp'])) {
     </style>
 </head>
 <body class="login">
-
+    <div class="bg-wrapper">
+        <img src="images/house.jpg" alt="Background logo" class="bg-image">
+    </div>
 <h2 class="font-heading">Login</h2>
 <div class="login-container">
     <img src="images/bcblogo.png" alt="BCB logo" class="logo">

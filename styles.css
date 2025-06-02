@@ -1,24 +1,28 @@
 body {
-    display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    justify-content: center; 
-    align-items: center; /* Center elements horizontally */
-    height: 100vh; /* Full viewport height */
     margin: 0;
-    background-color: #ffffff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    font-family: sans-serif;
 }
 
 body.login {
-    background-color: #d9f7d9; /* Soft green background */
+    background-color: white;
 }
 
 .login-container {
-    background-color: rgb(255, 255, 255);
-    padding: 50px; /* Increased padding for a larger container */
+    position: relative;
+    z-index: 1;
+    background-color: white;
+    padding: 50px;
     border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow */
-    width: 90%; /* Make the container responsive */
-    max-width: 600px; /* Set a maximum width */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
     text-align: center;
 }
 
@@ -140,5 +144,20 @@ button {
 .big-button:hover {
     background-color: #498249; /* Darker green on hover */
 }
-
+        .bg-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.2;
+            overflow: hidden;
+        }
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
 

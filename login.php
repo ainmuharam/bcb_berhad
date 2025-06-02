@@ -197,6 +197,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
     </style>
 </head>
 <body class="login">
+     <div class="bg-wrapper">
+        <img src="images/house.jpg" alt="Background logo" class="bg-image">
+    </div>
     <?php if (!empty($_SESSION['default_password'])): ?>
     <div id="defaultPasswordModal" class="modal" style="display: block;">
         <div class="modal-content">

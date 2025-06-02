@@ -127,8 +127,8 @@
 <body>
     </div>
         <div class="bg-wrapper">
-        <img src="images/house.jpg" alt="Background logo" class="bg-image">
-    </div>
+            <img src="images/house.jpg" alt="Background logo" class="bg-image">
+        </div>
     <div class="container">
         <img src="images/bcblogo.png" alt="BCB logo" class="logo">
         <h1>Smart Face Attendance System</h1>
