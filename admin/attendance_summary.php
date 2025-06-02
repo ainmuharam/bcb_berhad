@@ -1,6 +1,6 @@
 <?php
 date_default_timezone_set('Asia/Kuala_Lumpur');
-include_once $_SERVER['DOCUMENT_ROOT'].'/bcb_berhad/database.php';
+include_once __DIR__ . '/../database.php';
 
 class AttendanceSummary {
     private $conn;
