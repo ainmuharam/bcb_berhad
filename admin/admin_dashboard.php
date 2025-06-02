@@ -1,8 +1,10 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 include 'admin_session.php';
 require_once 'register_handling.php';
 require_once 'depart_handling.php';
-require_once 'attendance_handling.php';
 require_once 'daily_report.php';
 
 date_default_timezone_set('Asia/Kuala_Lumpur');
