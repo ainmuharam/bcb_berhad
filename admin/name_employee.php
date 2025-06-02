@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 
 $database = new Database();
 
-$sql = "SELECT name FROM users WHERE status = 1"; 
+$sql = "SELECT DISTINCT name FROM users WHERE status = 1";
 $result = $database->conn->query($sql);
 
 $names = [];
