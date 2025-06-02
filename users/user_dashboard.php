@@ -1,6 +1,6 @@
 <?php
 include 'user_session.php';
-include_once $_SERVER['DOCUMENT_ROOT'].'/bcb_berhad/database.php';
+include_once __DIR__ . '/../database.php';
 require_once 'users_handling.php';
 require_once '../admin/register_handling.php';
 
