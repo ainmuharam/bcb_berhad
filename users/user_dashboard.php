@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include 'user_session.php';
 include_once __DIR__ . '/../database.php';
 require_once 'users_handling.php';
