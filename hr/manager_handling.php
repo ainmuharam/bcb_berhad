@@ -108,7 +108,7 @@ public function getAnnualLeaves($selectedDate, $selectedDepartment) {
 
 public function getTotalEmployeesInDepartment($departmentId, $date) {
     $stmt = $this->conn->prepare("
-        SELECT COUNT(*) AS total 
+        SELECT COUNT(DISTINCT emp_id) AS total 
         FROM users 
         WHERE department_id = ? 
         AND created_at <= ? 
@@ -120,7 +120,6 @@ public function getTotalEmployeesInDepartment($departmentId, $date) {
     $row = $result->fetch_assoc();
     return $row ? (int)$row['total'] : 0;
 }
-
 
 
    public function uploadProfileImage($file) {
