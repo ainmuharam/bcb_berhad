@@ -1,12 +1,13 @@
 <?php
-$receiver = "bcbberhad@gmail.com";
-$subject = "Email Test via PHP using Localhost";
-$body = "Hi, there...This is a test email send from Localhost.";
-$sender = "From:muharamnurain@gmail.com";
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-if(mail($receiver, $subject, $body, $sender)){
-    echo "Email sent successfully to $receiver";
-}else{
-    echo "Sorry, failed while sending mail!";
+include 'database.php';
+
+try {
+    $db = new Database();
+    echo "Database connected successfully.";
+} catch (Exception $e) {
+    echo "Database connection failed: " . $e->getMessage();
 }
 ?>
