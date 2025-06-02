@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forgot-email'])) {
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'muharamnurain@gmail.com'; // Your Gmail address
-        $mail->Password   = 'sfeengfrbfmnfdrq';         // Gmail App Password
+        $mail->Password   = 'chzxxjooufibcbss';         // Gmail App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 

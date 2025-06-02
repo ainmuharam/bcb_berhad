@@ -25,7 +25,7 @@ class OTP {
             $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
             $mail->SMTPAuth = true;
             $mail->Username = 'muharamnurain@gmail.com';   // SMTP username
-            $mail->Password = 'iqaxezpibvcsqowf';     // SMTP password
+            $mail->Password = 'chzxxjooufibcbss';     // SMTP password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; // Use TLS encryption
             $mail->Port = 587;
 
