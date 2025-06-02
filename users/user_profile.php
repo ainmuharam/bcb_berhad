@@ -7,7 +7,8 @@ if (!isset($_GET['emp_id']) || $_GET['emp_id'] != $employeeId) {
     header("Location: user_profile.php?emp_id=$employeeId");
     exit();
 }
-include_once '../database.php';
+require_once __DIR__ . '/../database.php';
+
 include_once '../admin/register_handling.php'; // Assumes this contains the User class
 include_once '../admin/depart_handling.php';   // Assumes this contains the Department class
 include_once 'users_handling.php';            // Assumes this contains the userAttendance class
