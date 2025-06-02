@@ -3,7 +3,7 @@ if (!class_exists('Database')) {
     class Database {
         private $servername = "localhost";
         private $username = "user3";
-        private $password = "";
+        private $password = "user3_";
         private $dbname = "bcb_berhad";
         public $conn;
 
