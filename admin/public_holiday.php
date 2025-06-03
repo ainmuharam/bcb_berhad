@@ -295,20 +295,22 @@ document.getElementById('holiday-form').addEventListener('submit', function(e) {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.json())
+    .then(response => response.text()) // Get raw text
     .then(data => {
-        if (data.status === "success") {
+        console.log("Server response:", data);
+        const json = JSON.parse(data); // Parse manually
+        if (json.status === "success") {
             alert("Holiday added successfully!");
-            closeForm(); 
-            addHolidayToCalendar(data.holiday_date, data.holiday_name);
+            closeForm();
+            addHolidayToCalendar(json.holiday_date, json.holiday_name);
         } else {
-            alert("Failed to add holiday: " + data.message);
+            alert("Failed to add holiday: " + json.message);
         }
     })
     .catch(error => {
+        console.error("Fetch error:", error);
         alert("An error occurred: " + error);
     });
-});
 
 
 function addHolidayToCalendar(holidayDate, holidayName) {
