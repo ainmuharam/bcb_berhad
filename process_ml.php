@@ -17,6 +17,7 @@ class ManualLogin {
 
         $sql = "INSERT INTO manual_login (emp_id, image, date, time) VALUES (?, ?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
+        $null = null;
         $stmt->bind_param("sbss", $empID, $null, $date, $time);
 
         // Send the binary image data
