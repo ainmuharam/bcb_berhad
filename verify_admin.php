@@ -1,5 +1,5 @@
 <?php
-include_once 'admin_session.php';
+session_start();
 include_once __DIR__ . '/database.php';
 
 require 'PHPMailer/src/PHPMailer.php';
@@ -52,6 +52,7 @@ if (isset($_POST['verify_otp'])) {
     $enteredOtp = $_POST['otp'] ?? '';
 
     if (isset($_SESSION['admin_otp']) && $enteredOtp == $_SESSION['admin_otp']) {
+        $_SESSION['admin_authenticated'] = true;
         $_SESSION['admin_session'] = $_SESSION['pending_admin_session'];
         unset($_SESSION['pending_admin_session'], $_SESSION['admin_otp']);
 
