@@ -217,15 +217,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
         window.onclick = function(event) {
             const modal = document.getElementById('defaultPasswordModal');
             if (event.target === modal) {
-                modal.style.display = "none";
+                window.location.href = 'login.php'; // Redirect to login.php
             }
         };
 
-        // Also close modal when clicking the close (X) button
+        // Close modal when clicking the close (X) button
         document.querySelector('#defaultPasswordModal .close').onclick = function () {
-            document.getElementById('defaultPasswordModal').style.display = 'none';
+            window.location.href = 'login.php'; // Redirect to login.php
         };
     </script>
+
 
 <?php unset($_SESSION['default_password']); ?>
 <?php endif; ?>
