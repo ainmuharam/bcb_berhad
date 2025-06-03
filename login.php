@@ -212,14 +212,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
             Please click <strong><a href="#" id="forgotPasswordLink">Forgot Password</a></strong> to reset new password.</p>
         </div>
     </div>
-<script>
-    window.onclick = function(event) {
-        const modal = document.getElementById('defaultPasswordModal');
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
-</script>
+    <script>
+        // Close modal when clicking outside the modal-content
+        window.onclick = function(event) {
+            const modal = document.getElementById('defaultPasswordModal');
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        // Also close modal when clicking the close (X) button
+        document.querySelector('#defaultPasswordModal .close').onclick = function () {
+            document.getElementById('defaultPasswordModal').style.display = 'none';
+        };
+    </script>
+
 <?php unset($_SESSION['default_password']); ?>
 <?php endif; ?>
 
