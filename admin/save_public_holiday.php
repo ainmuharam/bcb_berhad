@@ -3,7 +3,6 @@ header('Content-Type: application/json');
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-include_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/add_public_holiday.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,4 +1,6 @@
 <?php
+include_once __DIR__ . '/../database.php';
+
 class PublicHoliday {
     private $conn;
     private $table_name = "public_holiday";

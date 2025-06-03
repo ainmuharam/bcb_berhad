@@ -361,7 +361,6 @@ function addHolidayToCalendar(holidayDate, holidayName) {
 
 function deleteHoliday(holidayName, holidayDate) {
     if (confirm('Are you sure you want to delete this holiday?')) {
-        // Send AJAX request to delete the holiday
         fetch('delete_public_holiday.php', {
             method: 'POST',
             body: JSON.stringify({ holiday_name: holidayName, holiday_date: holidayDate }),
