@@ -295,10 +295,12 @@ document.getElementById('holiday-form').addEventListener('submit', function(e) {
         },
         body: JSON.stringify(formData)
     })
-    .then(response => response.text()) // Get raw text
-    .then(data => {
-        console.log("Server response:", data);
-        const json = JSON.parse(data); // Parse manually
+.then(response => response.text())
+.then(data => {
+    console.log("Server response:", data); // Debug
+
+    try {
+        const json = JSON.parse(data);
         if (json.status === "success") {
             alert("Holiday added successfully!");
             closeForm();
@@ -306,11 +308,11 @@ document.getElementById('holiday-form').addEventListener('submit', function(e) {
         } else {
             alert("Failed to add holiday: " + json.message);
         }
-    })
-    .catch(error => {
-        console.error("Fetch error:", error);
-        alert("An error occurred: " + error);
-    });
+    } catch (error) {
+        console.error("Invalid JSON:", error);
+        alert("Server returned invalid JSON:\n" + data);
+    }
+})
 });
 
 
