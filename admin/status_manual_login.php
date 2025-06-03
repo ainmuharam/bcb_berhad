@@ -1,5 +1,12 @@
 <?php
+ob_start();  // Prevent output before headers
+header('Content-Type: application/json');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include_once __DIR__ . '/../database.php';
+
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $id = $_POST['id'];
@@ -30,10 +37,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->bind_param("si", $status, $id);
     $stmt->execute();
 
-    $clock = $_POST['clock'] ?? null;
-    $stmtClock = $conn->prepare("UPDATE manual_login SET clock = ? WHERE id = ?");
-    $stmtClock->bind_param("si", $clock, $id);
-    $stmtClock->execute();
+    $clock = $_POST['clock'] ?? '';
+
+    if ($clock !== '' && ($clock === "clockIn" || $clock === "clockOut")) {
+        $stmtClock = $conn->prepare("UPDATE manual_login SET clock = ? WHERE id = ?");
+        $stmtClock->bind_param("si", $clock, $id);
+        $stmtClock->execute();
+    }
+
 
     if ($status === "Approved") {
         if ($clock === "clockIn" || $clock === "clockOut") {
