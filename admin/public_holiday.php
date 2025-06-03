@@ -5,6 +5,7 @@ include_once __DIR__ . '/../database.php';
 $database = new Database();
 $db = $database->conn;
 
+// Handle the selected month
 $selectedMonth = isset($_GET['date']) && !empty($_GET['date']) ? $_GET['date'] : date('Y-m');
 $month = date('m', strtotime($selectedMonth));
 $year = date('Y', strtotime($selectedMonth));
@@ -380,6 +381,7 @@ function deleteHoliday(holidayName, holidayDate) {
         });
     }
 }
+
 
 </script>
 
