@@ -11,7 +11,7 @@ class Department {
     }
 
     public function getActiveDepartments() {
-        $query = "SELECT COUNT(*) as total FROM " . $this->table_name . " WHERE status = 1";
+        $query = "SELECT COUNT(DISTINCT department_id) as total FROM " . $this->table_name . " WHERE status = 1";
         $stmt = $this->db->conn->prepare($query);
         $stmt->execute();
         $result = $stmt->get_result()->fetch_assoc();
