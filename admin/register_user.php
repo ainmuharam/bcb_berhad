@@ -271,8 +271,12 @@ while ($row = $roleResult->fetch_assoc()) {
                         <div id="new-action-buttons" style="display: none; flex-direction: column; align-items: center; margin-top: 20px;">
                             <div style="text-align: center; margin-bottom: 15px;">
                                 <label for="employee-id" style="display: block; margin-bottom: 5px;">Employee ID</label>
-                                <input type="text" id="employee-id" name="employee-id" placeholder="Enter Employee ID"
-                                    style="padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 5px;">
+                                <input type="number" id="employee-id" name="employee-id"
+                                    required min="1" max="9999999999"
+                                    oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);"
+                                    placeholder="Enter Employee ID"
+                                    style="padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 5px;"
+                                    onwheel="this.blur();">
                             </div>
                             <div style="display: flex; justify-content: center; align-items: center;">
                                 <div id="new-retry-button" onclick="retryNewImage()"
