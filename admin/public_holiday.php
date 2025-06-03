@@ -311,6 +311,7 @@ document.getElementById('holiday-form').addEventListener('submit', function(e) {
         console.error("Fetch error:", error);
         alert("An error occurred: " + error);
     });
+});
 
 
 function addHolidayToCalendar(holidayDate, holidayName) {
@@ -390,10 +391,6 @@ function deleteHoliday(holidayName, holidayDate) {
         });
     }
 }
-
-
-
-
 
 </script>
 
