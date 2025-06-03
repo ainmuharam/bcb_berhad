@@ -54,7 +54,7 @@ def recognize_face(cropped_face, enrolled_faces):
             result = DeepFace.verify(
                 resized_face,
                 img_path,
-                model_name="Facenet",
+                model_name="Dlib",
                 enforce_detection=False
             )
 
