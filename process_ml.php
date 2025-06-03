@@ -24,7 +24,7 @@ class ManualLogin {
 
 
     if ($stmt->execute()) {
-        $adminQuery = "SELECT email FROM users WHERE role_id = 1"; // adjust if needed
+        $adminQuery = "SELECT email FROM users WHERE role_id = 1 AND status = 1"; 
         $adminResult = $this->conn->query($adminQuery);
 
         if ($adminResult && $adminResult->num_rows > 0) {
