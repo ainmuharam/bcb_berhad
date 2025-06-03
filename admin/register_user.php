@@ -56,7 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die('Base64 decode failed');
         }
 
-        // Sanitize employee ID for filename
         $sanitizedEmployeeId = preg_replace('/[^a-zA-Z0-9_-]/', '', $employeeId);
         $fileName = 'employee_picture/' . $sanitizedEmployeeId . '.png';
 
@@ -64,12 +63,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mkdir('employee_picture', 0755, true); // Create the uploads directory if it doesn't exist
         }
 
-        // Save the image to the server
         if (file_put_contents($fileName, $data) === false) {
             die('Failed to save image to server');
         }
     } else {
-        die('Invalid image data');
+        die('Please capture user image for register!');
     }
 
     $user = new User($database); // Assuming $database is your database connection
