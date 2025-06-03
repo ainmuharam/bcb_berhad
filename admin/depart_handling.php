@@ -31,7 +31,9 @@ class Department {
 
 
     public function getDepartments($searchQuery = null) {
-        $query = "SELECT DISTINCT department_id, department_name, created_at, status FROM " . $this->table_name;
+        $query = "SELECT DISTINCT department_id, department_name, created_at, status 
+                FROM " . $this->table_name . " 
+                ORDER BY status DESC, department_name ASC";
 
         if (!empty($searchQuery)) {
             $query .= " WHERE department_id LIKE ? OR department_name LIKE ?";
