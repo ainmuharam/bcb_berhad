@@ -1,4 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+header('Content-Type: application/json');
+
 include_once __DIR__ . '/../database.php';
 require_once 'add_public_holiday.php';
 
