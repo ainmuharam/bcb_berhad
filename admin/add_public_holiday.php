@@ -11,31 +11,17 @@ class PublicHoliday {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (holiday_date, holiday_name) VALUES (?, ?)";
-
+        $query = "INSERT INTO public_holiday (holiday_date, holiday_name) VALUES (?, ?)";
         $stmt = $this->conn->prepare($query);
-
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $this->conn->error);
-        }
-
         $stmt->bind_param("ss", $this->holiday_date, $this->holiday_name);
-
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
+        return $stmt->execute();
     }
 
     public function delete() {
         $query = "DELETE FROM public_holiday WHERE holiday_date = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("s", $this->holiday_date);
-
         return $stmt->execute();
     }
 }
-
-
 ?>
