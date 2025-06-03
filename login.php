@@ -173,7 +173,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
             overflow: auto; 
             background-color: rgb(0,0,0); 
             background-color: rgba(0,0,0,0.4); 
-            padding-top: 60px; 
+            padding-top: 60px;
+            z-index: 9999;
         }
 
         .modal-content {
@@ -183,7 +184,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
             border: 1px solid #888;
             width: 80%; 
             max-width: 400px;
-            z-index: 9999;
         }
 
         .close {
@@ -206,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
         <img src="images/house.jpg" alt="Background logo" class="bg-image">
     </div>
     <?php if (!empty($_SESSION['default_password'])): ?>
-    <div id="defaultPasswordModal" class="modal" style="display: block;">
+    <div id="defaultPasswordModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('defaultPasswordModal').style.display='none';">&times;</span>
             <p><strong>First Tme Login?</strong><br>
