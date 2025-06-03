@@ -183,6 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
             border: 1px solid #888;
             width: 80%; 
             max-width: 400px;
+            z-index: 9999;
         }
 
         .close {
