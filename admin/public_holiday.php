@@ -5,10 +5,12 @@ include_once __DIR__ . '/../database.php';
 $database = new Database();
 $db = $database->conn;
 
-$selectedMonth = isset($_GET['date']) ? $_GET['date'] : date('Y-m');
+// Handle the selected month
+$selectedMonth = isset($_GET['date']) && !empty($_GET['date']) ? $_GET['date'] : date('Y-m');
 $month = date('m', strtotime($selectedMonth));
 $year = date('Y', strtotime($selectedMonth));
 
+// Query to fetch the holidays for the selected month
 $holidayQuery = "SELECT DISTINCT holiday_date, holiday_name FROM public_holiday 
                  WHERE DATE_FORMAT(holiday_date, '%Y-%m') = ?";
 
@@ -22,13 +24,15 @@ while ($row = $result->fetch_assoc()) {
     $holidayDate = $row['holiday_date'];
     $holidayName = $row['holiday_name'];
     
+    // Store holidays as an array for each date
     if (!isset($holidays[$holidayDate])) {
         $holidays[$holidayDate] = [];
     }
     $holidays[$holidayDate][] = $holidayName;
 }
 
-$displayMonth = date('F Y', strtotime($selectedMonth));
+$displayMonth = date('F Y', strtotime($selectedMonth)); // Get the month name for display
+
 ?>
 
 <!DOCTYPE html>
@@ -279,26 +283,33 @@ function closeForm() {
 document.getElementById('holiday-form').addEventListener('submit', function(e) {
     e.preventDefault(); // Prevent normal form submission
 
-    const formData = new FormData(this);
+    const formData = {
+        holiday_name: document.getElementById('holiday-name').value,
+        holiday_date: document.getElementById('holiday-date').value
+    };
 
     fetch('save_public_holiday.php', {
         method: 'POST',
-        body: formData
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
     })
-    .then(response => response.json()) // Parse JSON response
+    .then(response => response.json())
     .then(data => {
         if (data.status === "success") {
             alert("Holiday added successfully!");
-            closeForm(); // Close the popup form
-            addHolidayToCalendar(data.holiday_date, data.holiday_name); // Add to the calendar
+            closeForm(); 
+            addHolidayToCalendar(data.holiday_date, data.holiday_name);
         } else {
-            alert("Failed to add holiday: " + data.message); // Handle error
+            alert("Failed to add holiday: " + data.message);
         }
     })
     .catch(error => {
-        alert("An error occurred: " + error); // Catch any other errors
+        alert("An error occurred: " + error);
     });
 });
+
 
 function addHolidayToCalendar(holidayDate, holidayName) {
     const cells = document.querySelectorAll('.calendar td');
@@ -357,6 +368,7 @@ function addHolidayToCalendar(holidayDate, holidayName) {
 
 function deleteHoliday(holidayName, holidayDate) {
     if (confirm('Are you sure you want to delete this holiday?')) {
+        // Send AJAX request to delete the holiday
         fetch('delete_public_holiday.php', {
             method: 'POST',
             body: JSON.stringify({ holiday_name: holidayName, holiday_date: holidayDate }),
@@ -376,6 +388,9 @@ function deleteHoliday(holidayName, holidayDate) {
         });
     }
 }
+
+
+
 
 
 </script>
