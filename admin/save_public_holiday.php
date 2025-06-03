@@ -1,11 +1,11 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+header('Content-Type: application/json'); // Ensure JSON header
+
 include_once __DIR__ . '/../database.php';
 require_once 'add_public_holiday.php';
-
-$database = new Database();
-$db = $database->conn;
-
-$input = json_decode(file_get_contents('php://input'), true);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST['holiday_date']) && !empty($_POST['holiday_name'])) {

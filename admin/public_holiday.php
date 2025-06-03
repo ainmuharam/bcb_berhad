@@ -285,7 +285,7 @@ document.getElementById('holiday-form').addEventListener('submit', function(e) {
 
     const formData = new FormData(this);
 
-    fetch('save_public_holiday.php', {
+    fetch('./admin/save_public_holiday.php', {
         method: 'POST',
         body: formData
     })
