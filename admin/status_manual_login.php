@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include_once __DIR__ . '/../database.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -50,7 +54,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $loginData['time'],
                 $loginData['date']
             );
-            $stmtInsert->execute();
+            if (!$stmtInsert->execute()) {
+                echo json_encode(["success" => false, "message" => "Insert into face_recognition failed: " . $stmtInsert->error]);
+                exit;
+            }
         } else {
             echo json_encode(["success" => false, "message" => "Clock type not selected."]);
             exit;
