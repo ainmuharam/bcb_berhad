@@ -173,8 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
             overflow: auto; 
             background-color: rgb(0,0,0); 
             background-color: rgba(0,0,0,0.4); 
-            padding-top: 60px;
-            z-index: 9999;
+            padding-top: 60px; 
         }
 
         .modal-content {
@@ -206,7 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
         <img src="images/house.jpg" alt="Background logo" class="bg-image">
     </div>
     <?php if (!empty($_SESSION['default_password'])): ?>
-    <div id="defaultPasswordModal" class="modal">
+    <div id="defaultPasswordModal" class="modal" style="display: block;">
         <div class="modal-content">
             <span class="close" onclick="document.getElementById('defaultPasswordModal').style.display='none';">&times;</span>
             <p><strong>First Tme Login?</strong><br>
@@ -215,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
     </div>
 <script>
     window.onclick = function(event) {
-        document.getElementById('defaultPasswordModal').style.display = 'block';
+        const modal = document.getElementById('defaultPasswordModal');
         if (event.target === modal) {
             modal.style.display = "none";
         }
