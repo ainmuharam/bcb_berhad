@@ -1,5 +1,5 @@
 <?php
-session_start();
+include_once 'admin_session.php';
 include_once __DIR__ . '/database.php';
 
 require 'PHPMailer/src/PHPMailer.php';
