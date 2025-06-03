@@ -5,12 +5,10 @@ include_once __DIR__ . '/../database.php';
 $database = new Database();
 $db = $database->conn;
 
-// Handle the selected month
-$selectedMonth = isset($_GET['date']) && !empty($_GET['date']) ? $_GET['date'] : date('Y-m');
+$selectedMonth = isset($_GET['date']) ? $_GET['date'] : date('Y-m');
 $month = date('m', strtotime($selectedMonth));
 $year = date('Y', strtotime($selectedMonth));
 
-// Query to fetch the holidays for the selected month
 $holidayQuery = "SELECT DISTINCT holiday_date, holiday_name FROM public_holiday 
                  WHERE DATE_FORMAT(holiday_date, '%Y-%m') = ?";
 
@@ -24,15 +22,13 @@ while ($row = $result->fetch_assoc()) {
     $holidayDate = $row['holiday_date'];
     $holidayName = $row['holiday_name'];
     
-    // Store holidays as an array for each date
     if (!isset($holidays[$holidayDate])) {
         $holidays[$holidayDate] = [];
     }
     $holidays[$holidayDate][] = $holidayName;
 }
 
-$displayMonth = date('F Y', strtotime($selectedMonth)); // Get the month name for display
-
+$displayMonth = date('F Y', strtotime($selectedMonth));
 ?>
 
 <!DOCTYPE html>
