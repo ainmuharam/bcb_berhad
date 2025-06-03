@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
     </div>
 <script>
     window.onclick = function(event) {
-        const modal = document.getElementById('defaultPasswordModal');
+        document.getElementById('defaultPasswordModal').style.display = 'block';
         if (event.target === modal) {
             modal.style.display = "none";
         }
