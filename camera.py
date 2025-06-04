@@ -59,14 +59,14 @@ def recognize_face(cropped_face, enrolled_faces):
         resized_face = cv2.resize(cropped_face_rgb, (160, 160))
 
         for emp_id, img_path in enrolled_faces.items():
-        result = DeepFace.verify(
-            resized_face,
-            img_path,
-            model_name="ArcFace",  # This is PyTorch-compatible
-            enforce_detection=False,
-            detector_backend="opencv",  # Avoid MTCNN which uses TensorFlow
-            distance_metric="cosine"
-        )
+            result = DeepFace.verify(  # This line was not indented properly
+                resized_face,
+                img_path,
+                model_name="ArcFace",  # This is PyTorch-compatible
+                enforce_detection=False,
+                detector_backend="opencv",  # Avoid MTCNN which uses TensorFlow
+                distance_metric="cosine"
+            )
 
             if result["verified"] and result["distance"] < 0.4:
                 return emp_id
