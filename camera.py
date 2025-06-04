@@ -55,7 +55,8 @@ def recognize_face(cropped_face, enrolled_faces):
                 resized_face,
                 img_path,
                 model_name="Dlib",
-                enforce_detection=False
+                enforce_detection=False,
+                framework='pytorch'
             )
 
             if result["verified"] and result["distance"] < 0.4:
