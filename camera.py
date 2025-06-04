@@ -4,6 +4,7 @@ import os
 import time
 import mysql.connector
 from deepface import DeepFace
+from deepface.modules import verification
 
 # Optional: suppress TensorFlow warnings if TensorFlow is installed but you don't want to use it
 import warnings
@@ -52,9 +53,10 @@ def recognize_face(cropped_face, enrolled_faces):
             result = DeepFace.verify(
                 resized_face,
                 img_path,
-                model_name="Dlib",
+                model_name="ArcFace",  # ✅ Use PyTorch-compatible model
                 enforce_detection=False,
-                framework='pytorch'  # FORCE PyTorch here
+                detector_backend="opencv",  # ✅ Avoid TF-based detector
+                distance_metric="cosine"
             )
 
             if result["verified"] and result["distance"] < 0.4:
@@ -64,6 +66,7 @@ def recognize_face(cropped_face, enrolled_faces):
         print(f"Error in face recognition: {e}")
     
     return None
+
 
 def open_camera(action):
     cap = cv2.VideoCapture(0)
