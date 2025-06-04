@@ -1,12 +1,21 @@
+import os
+os.environ['DEEPFACE_BACKEND'] = 'pytorch'  # Force PyTorch backend
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'    # Suppress TensorFlow warnings (if any TF code runs)
+
 import cv2
 import sys
-import os
 import time
+import warnings
 import mysql.connector
+
 from deepface import DeepFace
 from deepface.modules import verification
 
-# Optional: suppress TensorFlow warnings if TensorFlow is installed but you don't want to use it
+from deepface.basemodels import Backends
+print(f"Running with backend: {Backends.get_current_backend()}")  # Should print 'pytorch'
+
+warnings.filterwarnings("ignore")
+
 import warnings
 warnings.filterwarnings("ignore")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress TensorFlow logs
@@ -50,14 +59,14 @@ def recognize_face(cropped_face, enrolled_faces):
         resized_face = cv2.resize(cropped_face_rgb, (160, 160))
 
         for emp_id, img_path in enrolled_faces.items():
-            result = DeepFace.verify(
-                resized_face,
-                img_path,
-                model_name="ArcFace",  # ✅ Use PyTorch-compatible model
-                enforce_detection=False,
-                detector_backend="opencv",  # ✅ Avoid TF-based detector
-                distance_metric="cosine"
-            )
+        result = DeepFace.verify(
+            resized_face,
+            img_path,
+            model_name="ArcFace",  # This is PyTorch-compatible
+            enforce_detection=False,
+            detector_backend="opencv",  # Avoid MTCNN which uses TensorFlow
+            distance_metric="cosine"
+        )
 
             if result["verified"] and result["distance"] < 0.4:
                 return emp_id
