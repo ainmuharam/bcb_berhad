@@ -1,9 +1,8 @@
 <?php
-if (!class_exists('Database')) {
     class Database {
         private $servername = "localhost";
         private $username = "root";
-        private $password = "Nurainmuharam02@";
+        private $password = "";
         private $dbname = "bcb_berhad";
         public $conn;
 
@@ -20,5 +19,5 @@ if (!class_exists('Database')) {
             }
         }
     }
-}
+
 ?>
