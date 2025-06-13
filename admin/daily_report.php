@@ -10,7 +10,7 @@ class AttendanceReport {
         $dayOfWeek = date('l', strtotime($date));
         $isHoliday = $this->user->isPublicHoliday($date);
 
-        if (in_array($dayOfWeek, ['Saturday', 'Sunday']) || $isHoliday) {
+        if (in_array($dayOfWeek, ['Sunday']) || $isHoliday) {
             return [
                 'attendanceRecords' => [],
                 'absentEmployees' => [],

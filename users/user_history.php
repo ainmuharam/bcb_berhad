@@ -44,7 +44,7 @@ $loginHistory = $attendance->getLoginHistoryByMonth($month, $year);
 <main>
     <div class="head-title">
         <div class="left">
-            <h1>Manul Login History</h1>
+            <h1>Manual Login History</h1>
             <ul class="breadcrumb">
                 <li><a href="#">Home</a></li>
                 <li><i class='bx bx-chevron-right'></i></li>
@@ -88,7 +88,7 @@ $loginHistory = $attendance->getLoginHistoryByMonth($month, $year);
                         <th>Date</th>
                         <th>Time</th>
                         <th>Clock In/Out</th>
-                        <th>Approval</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>

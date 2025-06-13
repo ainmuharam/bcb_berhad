@@ -12,146 +12,12 @@ include_once 'login_handling.php';
 $db = new Database(); 
 $login = new Login($db);
 
-if (!isset($_SESSION['login_attempts'])) {
-    $_SESSION['login_attempts'] = 0;
-}
-if (!isset($_SESSION['lockout_time'])) {
-    $_SESSION['lockout_time'] = null;
-}
-
-// Check if user is currently locked out
-$is_locked_out = false;
-$remaining_time = 0;
-if ($_SESSION['login_attempts'] >= 3) {
-    $elapsed = time() - $_SESSION['lockout_time'];
-    if ($elapsed < 180) { // 3 minutes lockout
-        $is_locked_out = true;
-        $remaining_time = 180 - $elapsed;
-    } else {
-        $_SESSION['login_attempts'] = 0;
-        $_SESSION['lockout_time'] = null;
-    }
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_email'])) {
-    $email = $_POST['forgot-email'];
-
-    if (!$login->emailExists($email)) {
-        header("Location: login.php?error=invalid_email");
-        exit();
-    }
-
-    header("Location: login.php?success=email_found");
-    exit();
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
-    $email = isset($_POST['email']) ? $_POST['email'] : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-
-    $query = "
-        SELECT u.emp_id, u.department_id, u.password, u.name, u.status, u.default_password, r.role_name 
-        FROM users u
-        LEFT JOIN role r ON u.role_id = r.role_id
-        WHERE u.email = ?
-    ";
-
-    $stmt = $db->conn->prepare($query);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-
-        if ((int)$user['status'] === 0) {
-            $error = "Invalid email or password.";
-            $_SESSION['login_attempts'] += 1;
-        } elseif (password_verify($password, $user['password'])) {
-            // Successful login - reset attempts
-            $_SESSION['login_attempts'] = 0;
-            $_SESSION['lockout_time'] = null;
-
-            $session_data = [
-                'emp_id' => $user['emp_id'],
-                'name' => $user['name'],
-                'role' => $user['role_name'],
-                'department_id' => $user['department_id'],
-                'email' => $email,
-                'logged_in' => true
-            ];
-
-            switch ($user['role_name']) {
-                case 'Admin':
-                    $_SESSION['admin_session'] = $session_data;
-                    break;
-                case 'Manager':
-                    $_SESSION['manager_session'] = $session_data;
-                    break;
-                case 'User':
-                    $_SESSION['user_session'] = $session_data;
-                    break;
-            }
-
-            $token = bin2hex(random_bytes(32));
-            $login->saveSessionToken($email, $token);
-
-            switch ($user['role_name']) {
-                case 'Admin':
-                    $_SESSION['admin_session']['token'] = $token;
-                    break;
-                case 'Manager':
-                    $_SESSION['manager_session']['token'] = $token;
-                    break;
-                case 'User':
-                    $_SESSION['user_session']['token'] = $token;
-                    break;
-            }
-
-            if ((int)$user['default_password'] === 1) {
-                $_SESSION['default_password'] = true;
-                header("Location: login.php");
-                exit();
-            }
-            switch ($user['role_name']) {
-                case 'Admin':
-                    $_SESSION['pending_admin_session'] = $session_data;
-                    header("Location: verify_admin.php");
-                    exit();
-                case 'Manager':
-                    header('Location: hr/manager_dashboard.php');
-                    exit();
-                case 'User':
-                    header('Location: users/user_dashboard.php');
-                    exit();
-                default:
-                    $error = "Unknown role assigned. Contact administrator.";
-                    break;
-            }
-        }  else {
-            // Wrong password
-            $_SESSION['login_attempts'] += 1;
-            if ($_SESSION['login_attempts'] >= 3) {
-                $_SESSION['lockout_time'] = time();
-                $is_locked_out = true;
-                $remaining_time = 180;
-            } else {
-                $error = "Invalid email or password.";
-            }
-        }
-    } else {
-        // Email not found
-        $_SESSION['login_attempts'] += 1;
-        if ($_SESSION['login_attempts'] >= 3) {
-            $_SESSION['lockout_time'] = time();
-            $is_locked_out = true;
-            $remaining_time = 180;
-        } else {
-            $error = "Invalid email or password.";
-        }
-    }
-}
+$result = $login->handleLoginRequest();
+$is_locked_out = $result['is_locked_out'] ?? false;
+$remaining_time = $result['remaining_time'] ?? 0;
+$error = $result['error'] ?? '';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -212,22 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
             Please click <strong><a href="#" id="forgotPasswordLink">Forgot Password</a></strong> to reset new password.</p>
         </div>
     </div>
-    <script>
-        // Close modal when clicking outside the modal-content
-        window.onclick = function(event) {
-            const modal = document.getElementById('defaultPasswordModal');
-            if (event.target === modal) {
-                window.location.href = 'login.php'; // Redirect to login.php
-            }
-        };
-
-        // Close modal when clicking the close (X) button
-        document.querySelector('#defaultPasswordModal .close').onclick = function () {
-            window.location.href = 'login.php'; // Redirect to login.php
-        };
-    </script>
-
-
 <?php unset($_SESSION['default_password']); ?>
 <?php endif; ?>
 
@@ -245,24 +95,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
         <p class="error"><?php echo htmlspecialchars($error); ?></p>
     <?php endif; ?>
     <?php if ($is_locked_out): ?>
-        <div id="countdown-message" style="color: red; font-weight: bold;">
-            Account locked. Please try again in <?php echo $remaining_time; ?> seconds.
+        <div id="countdown-message" 
+            data-seconds="<?php echo (int)$remaining_time; ?>" 
+            style="color: red; font-weight: bold;">
+            Account locked. Please try again in <?php echo (int)$remaining_time; ?> seconds.
         </div>
-        <script>
-            // Update countdown timer every second
-            let seconds = <?php echo $remaining_time; ?>;
-            const countdownElement = document.getElementById('countdown-message');
-            
-            const countdownInterval = setInterval(() => {
-                seconds--;
-                countdownElement.textContent = `Account locked. Please try again in ${seconds} seconds.`;
-                
-                if (seconds <= 0) {
-                    clearInterval(countdownInterval);
-                    location.reload(); // Reload the page when countdown reaches 0
-                }
-            }, 1000);
-        </script>
     <?php endif; ?>
     <form method="POST" action="login.php">
         <div class="form-group">
@@ -330,5 +167,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$is_locked_out) {
 </div>
 
 <script src="forgot_password.js"></script>
+<script src="default_password_modal.js"></script>
+<script src="password_timer.js"></script>
+
 </body>
 </html>

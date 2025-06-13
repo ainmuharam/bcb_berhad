@@ -2,8 +2,8 @@
 if (!class_exists('Database')) {
     class Database {
         private $servername = "localhost";
-        private $username = "user3";
-        private $password = "user3_";
+        private $username = "root";
+        private $password = "";
         private $dbname = "bcb_berhad";
         public $conn;
 

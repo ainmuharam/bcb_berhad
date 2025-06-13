@@ -22,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $empId = $loginData['emp_id'];
     $loginDate = $loginData['date'];
 
-    // Check if Clock In already exists in face_recognition for the same date
     $stmt2 = $conn->prepare("SELECT 1 FROM face_recognition WHERE emp_id = ? AND action = 'clock_in' AND attendance_date = ?");
     $stmt2->bind_param("ss", $empId, $loginDate);
     $stmt2->execute();

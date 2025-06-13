@@ -54,7 +54,7 @@ def recognize_face(cropped_face, enrolled_faces):
             result = DeepFace.verify(
                 resized_face,
                 img_path,
-                model_name="Dlib",
+                model_name="Facenet",
                 enforce_detection=False
             )
 
@@ -98,7 +98,6 @@ def open_camera(action):
         for (x, y, w, h) in faces:
             face_roi = frame[y:y+h, x:x+w]  # Crop the detected face
             
-            # Recognize face using DeepFace
             matched_emp_id = recognize_face(face_roi, enrolled_faces)
 
             if matched_emp_id:
@@ -120,7 +119,6 @@ def open_camera(action):
 
         cv2.imshow("Camera", frame)
 
-        # **Check if 3 seconds passed with no match**
         if start_time and time.time() - start_time >= 3 and matched_emp_id is None:
             print("No match found (timeout)")
             break  # Auto-exit camera after 3 seconds

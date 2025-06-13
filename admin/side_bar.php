@@ -73,7 +73,7 @@ $requests = $requestObj->getPendingManualLoginRequests();
 				</a>
 			</li>
 			<li>
-				<a href="/logout.php" class="logout">
+				<a href="../logout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>

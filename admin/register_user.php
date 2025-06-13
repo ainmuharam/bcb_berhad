@@ -41,13 +41,15 @@ $sql = "
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $employeeId = $_POST['employeeId'];
-    $name = $_POST['name'];
-    $department = $_POST['department'];
-    $email = $_POST['email'];
+    $employeeId = preg_replace("/[^a-zA-Z0-9_-]/", '', trim($_POST['employeeId']));
+    $name = htmlspecialchars(trim($_POST['name']));
+    $department = htmlspecialchars(trim($_POST['department']));
+    $email = filter_var(trim($_POST['email']), FILTER_VALIDATE_EMAIL);
     $password = $_POST['password'];
-    $profile_picture = $_POST['profile_picture'];
-    $role_id = $_POST['role_id'];
+    $hashed_password = password_hash($password, PASSWORD_ARGON2ID);
+    $role_id = intval($_POST['role_id']);
+    $profile_picture = $_POST['profile_picture'] ?? null;
+
 
     if (preg_match('/^data:image\/(\w+);base64,/', $profile_picture, $type)) {
         $data = substr($profile_picture, strpos($profile_picture, ',') + 1);
@@ -60,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $fileName = 'employee_picture/' . $sanitizedEmployeeId . '.png';
 
         if (!is_dir('employee_picture')) {
-            mkdir('employee_picture', 0755, true); // Create the uploads directory if it doesn't exist
+            mkdir('employee_picture', 0755, true); 
         }
 
         if (file_put_contents($fileName, $data) === false) {

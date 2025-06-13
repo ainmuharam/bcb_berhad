@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (empty($current_password) || empty($new_password) || empty($confirm_password)) {
         $_SESSION['error_message'] = "All fields are required.";
     } else {
-        // Call changePassword with correct ID
         $message = $user->changePassword($employeeId, $current_password, $new_password, $confirm_password);
 
         if (stripos($message, 'successfully') !== false) {

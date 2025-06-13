@@ -138,6 +138,7 @@
         <button id="manual-login" class="button" onclick="window.location.href='manual_process.php'">Manual Login</button>
         <p id="message"></p>
         <p id="error-message"></p>
-    
+
+
 </body>
 </html>

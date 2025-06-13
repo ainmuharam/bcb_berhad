@@ -526,7 +526,7 @@ public function getPasswordByEmpId($emp_id) {
     }
 
     $clockInTime = new DateTime($clockIn);
-    $onTime = new DateTime($clockInTime->format('Y-m-d') . ' 08:00:00');
+    $onTime = new DateTime($clockInTime->format('Y-m-d') . ' 09:00:00');
 
     if ($clockInTime <= $onTime) {
         return ['label' => 'On Time', 'class' => 'status-on-time'];
@@ -541,8 +541,8 @@ public function getClockOutStatus($clockOut) {
     }
 
     $clockOutTime = new DateTime($clockOut);
-    $exactFivePM = new DateTime($clockOutTime->format('Y-m-d') . ' 17:00:00');
-    $bufferTime = new DateTime($clockOutTime->format('Y-m-d') . ' 17:10:00');
+    $exactFivePM = new DateTime($clockOutTime->format('Y-m-d') . ' 17:15:00');
+    $bufferTime = new DateTime($clockOutTime->format('Y-m-d') . ' 17:30:00');
 
     if ($clockOutTime < $exactFivePM) {
         return ['label' => 'Early Leave', 'class' => 'status-late'];
@@ -558,7 +558,7 @@ public function getClockOutStatus($clockOut) {
         
         if ($this->isPublicHoliday($date)) {
             return 'Public Holiday';
-        } elseif ($dayOfWeek === 'Saturday' || $dayOfWeek === 'Sunday') {
+        } elseif ($dayOfWeek === 'Sunday') {
             return 'Weekend';
         } elseif (empty($clockIn) && empty($clockOut)) {
             return 'Absent';

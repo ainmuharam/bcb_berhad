@@ -1,7 +1,7 @@
 <?php
 include '../admin/request.php';
 require_once '../admin/register_handling.php';
-include '../hr/notification.php';
+include '../manager/notification.php';
 include_once 'user_session.php';
 
 
@@ -48,7 +48,7 @@ $showNotificationCount = ($notification->getUnreadCount() > 0 && !$_SESSION['vie
 				</a>
 			</li>
 			<li>
-				<a href="/logout.php" class="logout">
+				<a href="../logout.php" class="logout">
 					<i class='bx bxs-log-out-circle' ></i>
 					<span class="text">Logout</span>
 				</a>
