@@ -1,13 +1,12 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-$input = json_decode(file_get_contents('php://input'), true);
 
+$input = json_decode(file_get_contents('php://input'), true);
 
 if (isset($input['image'])) {
     $imageData = $input['image'];
-    
-    // Extract base64 data from Data URL
+
     $parts = explode(',', $imageData);
     if (count($parts) !== 2) {
         http_response_code(400);
@@ -16,7 +15,6 @@ if (isset($input['image'])) {
     }
 
     $decodedImage = base64_decode($parts[1]);
-
     if ($decodedImage === false) {
         http_response_code(400);
         echo "Base64 decode failed.";
@@ -26,16 +24,16 @@ if (isset($input['image'])) {
     $filename = 'capture_' . uniqid() . '.jpg';
     $filepath = __DIR__ . '/' . $filename;
 
-if (file_put_contents($filepath, $decodedImage)) {
-    $output = shell_exec("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
+    if (file_put_contents($filepath, $decodedImage)) {
+        $pythonBin = "/var/www/html/bcb_berhad/venv/bin/python";
+        $scriptPath = "/var/www/html/bcb_berhad/match_face.py";
+        $output = shell_exec("$pythonBin $scriptPath " . escapeshellarg($filename));
 
-    echo "✅ Success: Image captured and saved as $filename\n";
-    echo $output;  
-}
- else {
-    http_response_code(500);
-    echo "❌ Failed to save image.";
-}
+        echo $output; // <--- return the result to frontend
+    } else {
+        http_response_code(500);
+        echo "❌ Failed to save image.";
+    }
 } else {
     http_response_code(400);
     echo "No image data received.";
