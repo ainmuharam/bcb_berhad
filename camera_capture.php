@@ -41,43 +41,63 @@
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
   <p id="response"></p>
 
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const responseText = document.getElementById('response');
-    const ctx = canvas.getContext('2d');
-    let intervalId;
-    let matchFound = false;
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const responseText = document.getElementById('response');
+  const ctx = canvas.getContext('2d');
+  let intervalId;
+  let matchFound = false;
 
-    const action = new URLSearchParams(window.location.search).get('action') || 'clock_in';
+  const action = new URLSearchParams(window.location.search).get('action') || 'clock_in';
 
-    // Start the webcam stream
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
 
-        intervalId = setInterval(() => {
-          if (!matchFound) {
-            captureAndSend();
-          }
-        }, 1500); 
-      })
-      .catch(err => {
-        responseText.innerText = "Camera error: " + err.message;
-        responseText.className = "error";
-      });
+      intervalId = setInterval(() => {
+        if (!matchFound) {
+          captureAndSend();
+        }
+      }, 1500);
+    })
+    .catch(err => {
+      responseText.innerText = "Camera error: " + err.message;
+      responseText.className = "error";
+    });
 
-    function captureAndSend() {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL('image/jpeg');
-    }
-    function stopWebcam() {
-      const stream = video.srcObject;
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        video.srcObject = null;
+  function captureAndSend() {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/jpeg');
+
+    fetch('temp/random.php', {
+      method: 'POST',
+      body: JSON.stringify({ image: imageData }),
+      headers: {
+        'Content-Type': 'application/json'
       }
+    })
+    .then(res => res.text())
+    .then(data => {
+      responseText.innerText = data;
+      responseText.className = "success";
+      matchFound = true;
+      stopWebcam();
+    })
+    .catch(err => {
+      responseText.innerText = "Error uploading: " + err.message;
+      responseText.className = "error";
+    });
+  }
+
+  function stopWebcam() {
+    const stream = video.srcObject;
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
