@@ -116,7 +116,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     file_put_contents($tempImagePath, $imageData);
 
     // Run the Python script with temp image
-    $command = "/root/myenv/bin/python3 /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($tempImagePath) . " " . $action;
+    $command = "/var/www/myenv/bin/python3 /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($tempImagePath) . " " . $action;
     exec($command, $output, $return_var);
 
     // Remove temp image
