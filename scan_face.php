@@ -129,15 +129,31 @@
         <div class="bg-wrapper">
             <img src="images/house.jpg" alt="Background logo" class="bg-image">
         </div>
-    <div class="container">
-        <img src="images/bcblogo.png" alt="BCB logo" class="logo">
-        <h1>Smart Face Attendance System</h1>
-        <button onclick="clockInOut('clock_in')" class="button">Clock In</button>
-        <button onclick="clockInOut('clock_out')" class="button">Clock Out</button>
-        <br>
-        <button id="manual-login" class="button" onclick="window.location.href='manual_process.php'">Manual Login</button>
-        <p id="message"></p>
-        <p id="error-message"></p>
+        <div class="container">
+            <img src="images/bcblogo.png" alt="BCB logo" class="logo">
+            <h1>Smart Face Attendance System</h1>
+            
+            <button onclick="startCamera('clock_in')" class="button">Clock In</button>
+            <button onclick="startCamera('clock_out')" class="button">Clock Out</button>
+            <br>
+            <button id="manual-login" class="button" onclick="window.location.href='manual_process.php'">Manual Login</button>
+
+            <div id="camera-interface" style="display:none; margin-top: 20px;">
+                <video id="video" width="320" height="240" autoplay></video><br>
+                <button onclick="captureImage()" class="button">Capture & Submit</button>
+                <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+            </div>
+
+            <form id="uploadForm" method="POST" enctype="multipart/form-data" action="run_camera.php" style="display: none;">
+                <input type="hidden" name="action" id="actionInput">
+                <input type="hidden" name="image_data" id="imageData">
+            </form>
+
+            <!-- Messages -->
+            <p id="message"></p>
+            <p id="error-message"></p>
+        </div>
+
 
 
 </body>
