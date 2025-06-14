@@ -86,7 +86,7 @@ class Attendance {
         $stmt->close();
     }
 }
-    if ($return_var === 0 && !empty($output)) {
+    if (!empty($output)) {
         $matched_emp_id = trim(implode("", $output));
 
         $db = new Database();
