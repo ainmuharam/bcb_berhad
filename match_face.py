@@ -126,35 +126,11 @@ def open_camera(action):
         sys.exit(1)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python match_face.py <image_path> <action>")
+    if len(sys.argv) < 2:
+        print("Usage: python match_face.py <action>")
         sys.exit(1)
 
-    image_path = sys.argv[1]
-    action = sys.argv[2]
+    action = sys.argv[1]
+    open_camera(action)
 
-    if not os.path.exists(image_path):
-        print("Error: Image file not found.")
-        sys.exit(1)
-
-    image = cv2.imread(image_path)
-    face_cascade = cv2.CascadeClassifier('face_ref.xml')
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
-
-    enrolled_faces = get_enrolled_faces()
-    matched_emp_id = None
-
-    for (x, y, w, h) in faces:
-        face_roi = image[y:y+h, x:x+w]
-        matched_emp_id = recognize_face(face_roi, enrolled_faces)
-        if matched_emp_id:
-            break
-
-    if matched_emp_id:
-        print(matched_emp_id)
-        sys.exit(0)
-    else:
-        print("No match found")
-        sys.exit(1)
 
