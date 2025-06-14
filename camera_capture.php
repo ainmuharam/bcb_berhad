@@ -48,6 +48,8 @@
   const ctx = canvas.getContext('2d');
   let intervalId;
   let matchFound = false;
+  let noMatchCount = 0; // Track failed attempts
+  const maxAttempts = 5; // Stop after 5 tries if no match
 
   const action = new URLSearchParams(window.location.search).get('action') || 'clock_in';
 
@@ -80,9 +82,23 @@
     .then(res => res.text())
     .then(data => {
       responseText.innerText = data;
-      responseText.className = "success";
-      matchFound = true;
-      stopWebcam();
+
+      if (data.includes("MATCHED:")) {
+        responseText.className = "success";
+        matchFound = true;
+        stopWebcam();
+      } else if (data.includes("NO MATCH")) {
+        noMatchCount++;
+        responseText.className = "error";
+        responseText.innerText = "❌ Face not recognized. Attempt " + noMatchCount + " of " + maxAttempts;
+
+        if (noMatchCount >= maxAttempts) {
+          stopWebcam();
+          responseText.innerText += "\nStopped after too many failed attempts.";
+        }
+      } else {
+        responseText.className = "error";
+      }
     })
     .catch(err => {
       responseText.innerText = "Error uploading: " + err.message;
@@ -98,6 +114,7 @@
     }
   }
 </script>
+
 
 </body>
 </html>
