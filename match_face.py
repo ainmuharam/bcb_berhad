@@ -148,7 +148,7 @@ if __name__ == "__main__":
             break
 
     if matched_emp_id:
-        print(f"Matched: {matched_emp_id} ({action})")
+        print(matched_emp_id)
         sys.exit(0)
     else:
         print("No match found")
