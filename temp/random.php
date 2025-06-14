@@ -42,37 +42,32 @@ if (isset($input['image'])) {
             exit;
         }
 
-if ($result['status'] === 'matched') {
-    $action = $input['action'] ?? 'clock_in';
-    include_once __DIR__ . '/../database.php';
-    include_once __DIR__ . '/../attendance.php';
-    date_default_timezone_set("Asia/Kuala_Lumpur");
+        if ($result['status'] === 'matched') {
+            echo "✅ MATCHED: " . $result['employee_id'];
 
-    $matched_emp_id = $result['employee_id'];
-    $db = new Database();
-    $attendance = new Attendance($db, $matched_emp_id);
+            $action = $input['action'] ?? 'clock_in';
+            include_once __DIR__ . '/../database.php';
+            include_once __DIR__ . '/../attendance.php';
+            date_default_timezone_set("Asia/Kuala_Lumpur");
 
-    if ($action === "clock_in") {
-        $message = $attendance->clockIn();
-    } elseif ($action === "clock_out") {
-        $message = $attendance->clockOut();
-    } else {
-        $message = "Invalid action.";
-    }
+            $action = $input['action'] ?? 'clock_in';
+            $matched_emp_id = $result['employee_id'];
 
-    echo "\n" . $message;
+            $db = new Database();
+            $attendance = new Attendance($db, $matched_emp_id);
 
-    echo json_encode([
-        "status" => "matched",
-        "employee_id" => $matched_emp_id,
-        "message" => $message,
-        "timestamp" => date("H:i:s")
-    ]);
+            if ($action === "clock_in") {
+                echo "\n" . $attendance->clockIn();
+            } elseif ($action === "clock_out") {
+                echo "\n" . $attendance->clockOut();
+            } else {
+                echo "\nInvalid action.";
+            }
 
-    $db->close();
-} else {
-    echo "❌ NO MATCH";
-}
+            $db->close();
+        } else {
+            echo "❌ NO MATCH";
+        }
 
     } else {
         http_response_code(500);
