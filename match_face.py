@@ -1,8 +1,9 @@
-import cv2
-import sys
 import os
+import sys
 import mysql.connector
 from deepface import DeepFace
+
+CAPTURED_IMAGE = "/var/www/html/bcb_berhad/temp/captured.jpg"  # Assume last saved image
 
 def get_enrolled_faces():
     try:
@@ -34,63 +35,29 @@ def get_enrolled_faces():
         if 'conn' in locals() and conn.is_connected():
             conn.close()
 
-def normalize_lighting(image):
-    ycrcb = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
-    ycrcb[:, :, 0] = cv2.equalizeHist(ycrcb[:, :, 0])
-    return cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2BGR)
 
-def recognize_face(image_path, enrolled_faces):
-    try:
-        image = cv2.imread(image_path)
-        if image is None:
-            print("Error: Image not found or unreadable.")
-            return None
+def find_match(captured_image_path, enrolled_faces):
+    for emp_id, img_path in enrolled_faces.items():
+        try:
+            result = DeepFace.verify(img1_path=captured_image_path, img2_path=img_path, enforce_detection=False)
+            if result["verified"]:
+                print(f"✅ Match found: {emp_id} ({os.path.basename(img_path)})")
+                return emp_id, os.path.basename(img_path)
+        except Exception as e:
+            print(f"Error comparing with {img_path}: {e}")
+    print("❌ No match found.")
+    return None, None
 
-        face_cascade = cv2.CascadeClassifier('face_ref.xml')
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(60, 60))
-
-        if len(faces) == 0:
-            print("No face detected.")
-            return None
-
-        for (x, y, w, h) in faces:
-            face_roi = image[y:y+h, x:x+w]
-            normalized = normalize_lighting(face_roi)
-            face_rgb = cv2.cvtColor(normalized, cv2.COLOR_BGR2RGB)
-
-            for emp_id, enrolled_path in enrolled_faces.items():
-                try:
-                    result = DeepFace.verify(
-                        face_rgb,
-                        enrolled_path,
-                        model_name="Facenet",
-                        enforce_detection=False
-                    )
-                    if result["verified"] and result["distance"] < 0.4:
-                        return emp_id
-                except Exception as e:
-                    print(f"Comparison error with {emp_id}: {e}")
-
-    except Exception as e:
-        print(f"Recognition error: {e}")
-    
-    return None
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python match_face.py <image_path> <action>")
+    if not os.path.exists(CAPTURED_IMAGE):
+        print("Captured image not found.")
         sys.exit(1)
 
-    image_path = sys.argv[1]
-    action = sys.argv[2]  # Not used now, but can be logged or extended
+    faces = get_enrolled_faces()
+    emp_id, filename = find_match(CAPTURED_IMAGE, faces)
 
-    enrolled_faces = get_enrolled_faces()
-    matched_emp_id = recognize_face(image_path, enrolled_faces)
-
-    if matched_emp_id:
-        print(matched_emp_id)
-        sys.exit(0)
+    if emp_id:
+        print(f"MATCHED: {filename}")
     else:
-        print("No match found")
-        sys.exit(1)
+        print("NO MATCH")

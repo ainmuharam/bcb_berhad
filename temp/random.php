@@ -2,6 +2,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 $input = json_decode(file_get_contents('php://input'), true);
+$output = shell_exec('python3 /var/www/html/bcb_berhad/face_match.py');
+echo $output;
+
 
 if (isset($input['image'])) {
     $imageData = $input['image'];
