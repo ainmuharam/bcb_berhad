@@ -82,7 +82,7 @@
         })
     .then(res => res.text())
     .then(data => {
-      console.log(data); // For debugging in browser console
+      //console.log(data); // For debugging in browser console
       responseText.innerText = data;
       
       if (data.includes("MATCHED:")) {

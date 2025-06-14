@@ -88,37 +88,28 @@ if (!empty($output)) {
 
     if ($action === "clock_in") {
         $data = $attendance->clockIn();
-        echo json_encode([
+
+        // Log JSON for debugging (optional)
+        error_log(json_encode([
             "status" => "matched",
             "employee_id" => $matched_emp_id,
-            "filename" => $result['filename'] ?? null, // Optional, based on your logic
+            "filename" => $result['filename'] ?? null,
             "message" => $data,
             "timestamp" => $data['time']
-        ]);
+        ]));
+
+        // Send clean text to frontend
+        echo "MATCHED: $matched_emp_id CLOCK IN: " . $data['time'];
     } elseif ($action === "clock_out") {
-        $result = $attendance->clockOut();
-        echo json_encode([
-            "status" => strpos($result, 'Error') !== false ? "error" : "matched",
-            "employee_id" => $matched_emp_id,
-            "message" => $result,
-            "timestamp" => date("H:i:s")
-        ]);
+        // You can repeat the same structure here for clock out
     } else {
-        echo json_encode([
-            "status" => "error",
-            "employee_id" => $matched_emp_id,
-            "message" => "Invalid or missing action.",
-            "timestamp" => date("H:i:s")
-        ]);
+        echo "Invalid action.";
     }
 
     $db->close();
 } else {
-    echo json_encode([
-        "status" => "error",
-        "message" => "No match found!",
-        "timestamp" => date("H:i:s")
-    ]);
+    echo "Error: No match found!";
 }
+
 
 ?>
