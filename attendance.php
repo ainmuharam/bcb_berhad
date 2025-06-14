@@ -85,22 +85,4 @@ class Attendance {
         $stmt->close();
     }
 }
-    if (!empty($output)) {
-        $matched_emp_id = trim($output);
-        $db = new Database();
-        $attendance = new Attendance($db, $matched_emp_id);
-
-        if ($action === "clock_in") {
-            echo $attendance->clockIn();
-        } elseif ($data['action'] === "clock_out") {
-            echo $attendance->clockOut();
-        } else {
-            echo "Invalid action.";
-        }
-
-        $db->close();
-    } else {
-        echo "Error: No match found!";
-    }
-
 ?>
