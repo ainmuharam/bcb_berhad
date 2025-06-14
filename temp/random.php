@@ -66,7 +66,12 @@ if (isset($input['image'])) {
         } else {
             echo "❌ NO MATCH";
         }
-        
+        echo json_encode([
+        "status" => "matched",
+        "employee_id" => $matched_emp_id,
+        "message" => $message,
+        "timestamp" => date("H:i:s")
+    ]);
 
     } else {
         http_response_code(500);
