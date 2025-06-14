@@ -47,18 +47,22 @@ def recognize_face(cropped_face, enrolled_faces):
         face_rgb = cv2.cvtColor(normalized_face, cv2.COLOR_BGR2RGB)
 
         for emp_id, img_path in enrolled_faces.items():
+            print(f"Comparing with {emp_id}: {img_path}")
             result = DeepFace.verify(
                 face_rgb,
                 img_path,
                 model_name="Facenet",
                 enforce_detection=False
             )
+            print(f"Result for {emp_id}: {result}")
+
             if result["verified"] and result["distance"] < 0.4:
                 return emp_id
 
     except Exception as e:
         print(f"Recognition error: {e}")
     return None
+
 
 def open_camera(action):
     cap = cv2.VideoCapture(0)

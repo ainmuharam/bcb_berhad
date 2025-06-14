@@ -96,7 +96,7 @@ class Attendance {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST["action"];
 
-$command = "/root/myenv/bin/python /var/www/htmlbcb_berhad/match_face.py " . escapeshellarg($action);
+$command = "/root/myenv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($action);
     exec($command, $output, $return_var);
 
     if ($return_var == 0) {
