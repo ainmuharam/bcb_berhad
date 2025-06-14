@@ -1,6 +1,5 @@
 import os
 import sys
-import mysql.connector
 from deepface import DeepFace
 
 if len(sys.argv) < 2:
@@ -8,36 +7,18 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 CAPTURED_IMAGE = os.path.join("/var/www/html/bcb_berhad/temp", sys.argv[1])
+ENROLLED_FOLDER = "/var/www/html/employee_picture"
 
-def get_enrolled_faces():
-    try:
-        conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="Nurainmuharam02@",
-            database="bcb_berhad"
-        )
-        cursor = conn.cursor()
-        cursor.execute("SELECT emp_id, profile_picture FROM users WHERE status = 1")
-        results = cursor.fetchall()
+def get_enrolled_faces_from_folder():
+    enrolled_faces = {}
 
-        enrolled_faces = {}
-        for emp_id, img_path in results:
-            if img_path:
-                full_path = os.path.join("/var/www/html/bcb_berhad/admin/employee_picture", img_path)
-                if os.path.exists(full_path):
-                    enrolled_faces[emp_id] = full_path
+    for filename in os.listdir(ENROLLED_FOLDER):
+        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            emp_id = os.path.splitext(filename)[0]  # get employee ID from filename
+            full_path = os.path.join(ENROLLED_FOLDER, filename)
+            enrolled_faces[emp_id] = full_path
 
-        return enrolled_faces
-
-    except mysql.connector.Error as err:
-        print(f"Database error: {err}")
-        sys.exit(1)
-    finally:
-        if 'cursor' in locals():
-            cursor.close()
-        if 'conn' in locals() and conn.is_connected():
-            conn.close()
+    return enrolled_faces
 
 
 def find_match(captured_image_path, enrolled_faces):
@@ -58,7 +39,7 @@ if __name__ == "__main__":
         print("Captured image not found.")
         sys.exit(1)
 
-    faces = get_enrolled_faces()
+    faces = get_enrolled_faces_from_folder()
     emp_id, filename = find_match(CAPTURED_IMAGE, faces)
 
     if emp_id:
