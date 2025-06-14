@@ -44,6 +44,8 @@ if (isset($input['image'])) {
 
         if ($result['status'] === 'matched') {
             echo "✅ MATCHED: " . $result['employee_id'];
+
+            $action = $input['action'] ?? 'clock_in';
             include_once __DIR__ . '/../database.php';
             include_once __DIR__ . '/../attendance.php';
             date_default_timezone_set("Asia/Kuala_Lumpur");
