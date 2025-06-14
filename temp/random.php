@@ -88,6 +88,7 @@ if ($result['status'] === 'matched') {
     $message = ($action === "clock_in") ? $attendance->clockIn() : $attendance->clockOut();
 
     echo json_encode([
+        "redirect" => "scan_face.php",
         "status" => "matched",
         "employee_id" => $matched_emp_id,
         "filename" => $result['filename'] ?? null,

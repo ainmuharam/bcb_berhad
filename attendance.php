@@ -89,8 +89,8 @@ if (!empty($output)) {
     if ($action === "clock_in") {
         $data = $attendance->clockIn();
 
-        // Log JSON for debugging (optional)
         error_log(json_encode([
+            "redirect" => "scan_face.php",
             "status" => "matched",
             "employee_id" => $matched_emp_id,
             "filename" => $result['filename'] ?? null,
@@ -98,10 +98,8 @@ if (!empty($output)) {
             "timestamp" => $data['time']
         ]));
 
-        // Send clean text to frontend
         echo "MATCHED: $matched_emp_id CLOCK IN: " . $data['time'];
     } elseif ($action === "clock_out") {
-        // You can repeat the same structure here for clock out
     } else {
         echo "Invalid action.";
     }

@@ -80,22 +80,25 @@
             'Content-Type': 'application/json'
         }
         })
-    .then(res => res.text())
-    .then(data => {
-      //console.log(data); // For debugging in browser console
-      responseText.innerText = data;
-      
-      if (data.includes("MATCHED:")) {
-        matchFound = true;
-        stopWebcam();
-        clearInterval(intervalId);
-        responseText.className = "success";
-      } else if (data.includes("NO MATCH")) {
-        responseText.className = "error";
-      } else {
-        responseText.className = "";
-      }
-    })
+    .then(res => res.json())
+.then(data => {
+  console.log(data);  // Keep for debugging
+  if (data.status === "matched") {
+    matchFound = true;
+    stopWebcam();
+    clearInterval(intervalId);
+    responseText.innerText = `MATCHED: ${data.employee_id} CLOCK IN: ${data.time}`;
+    responseText.className = "success";
+
+    setTimeout(() => {
+      window.location.href = data.redirect || 'scan_face.php';
+    }, 2000);
+  } else {
+    responseText.innerText = data.message || "No match found.";
+    responseText.className = "error";
+  }
+})
+
     .catch(err => {
       responseText.innerText = "Error uploading: " + err.message;
       responseText.className = "error";
