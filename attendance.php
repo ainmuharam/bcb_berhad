@@ -1,7 +1,8 @@
 <?php
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-$action = $_POST['action'] ?? $_GET['action'] ?? null;
+$input = json_decode(file_get_contents("php://input"), true);
+$action = $input['action'] ?? $_POST['action'] ?? $_GET['action'] ?? null;
 
 class Attendance {
     private $db;

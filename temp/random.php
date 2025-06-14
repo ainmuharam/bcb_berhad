@@ -44,7 +44,6 @@ if ($output === null) {
     exit;
 }
 
-// If Python returns plain emp_id string, wrap it into a matched result
 if (preg_match('/^\d+$/', trim($output))) {
     $result = [
         "status" => "matched",
