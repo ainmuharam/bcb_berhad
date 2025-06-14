@@ -34,23 +34,14 @@ if (isset($input['image'])) {
             exit;
         }
 
-        $result = json_decode($output, true);
-
-        if ($result === null || json_last_error() !== JSON_ERROR_NONE) {
-            echo "❌ Invalid JSON output from Python script: " . json_last_error_msg();
-            echo "\nRaw output: " . htmlspecialchars($output);
-            exit;
-        }
-
-        if ($result['status'] === 'matched') {
-            $action = $input['action'] ?? 'clock_in';
+        // First check if output is just an employee ID (matched case)
+        if (is_numeric(trim($output))) {
+            $matched_emp_id = trim($output);
             include_once __DIR__ . '/../database.php';
             include_once __DIR__ . '/../attendance.php';
             date_default_timezone_set("Asia/Kuala_Lumpur");
 
             $action = $input['action'] ?? 'clock_in';
-            $matched_emp_id = $result['employee_id'];
-
             $db = new Database();
             $attendance = new Attendance($db, $matched_emp_id);
 
@@ -59,14 +50,31 @@ if (isset($input['image'])) {
             } elseif ($action === "clock_out") {
                 echo $attendance->clockOut();
             } else {
-                $message = "Invalid action.";
+                echo "Invalid action.";
             }
 
             $db->close();
-        } else {
-            echo "❌ NO MATCH";
+        } 
+        // Otherwise treat as JSON response
+        else {
+            $result = json_decode($output, true);
+            
+            if ($result === null || json_last_error() !== JSON_ERROR_NONE) {
+                echo "❌ Invalid JSON output from Python script: " . json_last_error_msg();
+                echo "\nRaw output: " . htmlspecialchars($output);
+                exit;
+            }
+
+            if (isset($result['status']) && $result['status'] === 'matched') {
+                // This case should theoretically never happen now
+                echo "❌ System error: Unexpected JSON match format";
+            } else {
+                echo "❌ NO MATCH";
+            }
         }
 
+        // Clean up the temporary image
+        @unlink($filepath);
     } else {
         http_response_code(500);
         echo "❌ Failed to save image.";
