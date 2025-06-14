@@ -23,7 +23,7 @@ def get_enrolled_faces_from_folder():
 def find_match(captured_image_path, enrolled_faces):
     for emp_id, img_path in enrolled_faces.items():
         try:
-            result = DeepFace.verify(img1_path=captured_image_path, img2_path=img_path, enforce_detection=False)
+            result = DeepFace.verify(img1_path=captured_image_path, img2_path=img_path, enforce_detection=True)
             if result["verified"]:
                 print(f"✅ Match found: {emp_id} ({os.path.basename(img_path)})")
                 return emp_id, os.path.basename(img_path)

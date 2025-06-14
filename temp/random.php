@@ -26,14 +26,15 @@ if (isset($input['image'])) {
     $filename = 'capture_' . uniqid() . '.jpg';
     $filepath = __DIR__ . '/' . $filename;
 
-    if (file_put_contents($filepath, $decodedImage)) {
+if (file_put_contents($filepath, $decodedImage)) {
     $output = shell_exec("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
 
-        echo "✅ Success: Image captured and saved as $filename";
-    } else {
-        http_response_code(500);
-        echo "❌ Failed to save image.";
-    }
+    echo "✅ Success: Image captured and saved as $filename\n";
+    echo $output; // <-- Add this line to show the result from the Python script
+} else {
+    http_response_code(500);
+    echo "❌ Failed to save image.";
+}
 } else {
     http_response_code(400);
     echo "No image data received.";
