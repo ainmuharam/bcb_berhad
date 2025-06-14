@@ -4,7 +4,7 @@ import json
 from deepface import DeepFace
 
 if len(sys.argv) < 2:
-    print("No filename provided.")
+    print(json.dumps({"status": "error", "message": "No filename provided"}))
     sys.exit(1)
 
 CAPTURED_IMAGE = os.path.join("/var/www/html/bcb_berhad/temp", sys.argv[1])
@@ -25,12 +25,14 @@ def find_match(captured_image_path, enrolled_faces):
             result = DeepFace.verify(
                 img1_path=captured_image_path,
                 img2_path=img_path,
-                enforce_detection=False  # Set to True if you want strict face detection
+                enforce_detection=False
             )
             if result["verified"]:
                 return emp_id, os.path.basename(img_path)
         except Exception as e:
-            print(f"Error comparing with {img_path}: {e}")
+            # Comment this out to prevent non-JSON output
+            # print(f"Error comparing with {img_path}: {e}")
+            pass
     return None, None
 
 if __name__ == "__main__":
