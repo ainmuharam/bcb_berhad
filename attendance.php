@@ -26,7 +26,10 @@ class Attendance {
 
         $this->updateDailySummary('clock_in');
 
-        return "Clock In Success! Employee: " . $this->emp_id . " at " . $this->current_time;
+        return [
+            "action" => "clock_in",
+            "time" => $this->current_time
+        ];
     }
 
     public function clockOut() {
