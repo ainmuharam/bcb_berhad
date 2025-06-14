@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Save to a temporary file
-    $tempImagePath = "/tmp/captured_image.jpg";
+    $tempImagePath = "/var/www/html/bcb_berhad/captured_image.jpg";
     file_put_contents($tempImagePath, $imageData);
 
     // Run the Python script with temp image
