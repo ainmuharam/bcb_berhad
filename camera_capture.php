@@ -46,9 +46,8 @@
   const canvas = document.getElementById('canvas');
   const responseText = document.getElementById('response');
   const ctx = canvas.getContext('2d');
+  let intervalId;
   let matchFound = false;
-  let noMatchCount = 0;
-  const maxAttempts = 5;
 
   const action = new URLSearchParams(window.location.search).get('action') || 'clock_in';
 
@@ -56,15 +55,9 @@
     .then(stream => {
       video.srcObject = stream;
 
-      // Start capturing every 1.5 seconds
-      const intervalId = setInterval(() => {
-        if (!matchFound && noMatchCount < maxAttempts) {
+      intervalId = setInterval(() => {
+        if (!matchFound) {
           captureAndSend();
-        } else if (noMatchCount >= maxAttempts) {
-          stopWebcam();
-          responseText.innerText = "❌ Match failed after 5 attempts.";
-          responseText.className = "error";
-          clearInterval(intervalId); // Stop trying
         }
       }, 1500);
     })
@@ -86,21 +79,15 @@
     })
     .then(res => res.text())
     .then(data => {
-      responseText.innerText = data;
+    responseText.innerText = data;
+    responseText.className = "success";
 
-      if (data.includes("MATCHED:")) {
+    if (data.includes("MATCHED:")) {
         matchFound = true;
-        responseText.className = "success";
         stopWebcam();
-      } else if (data.includes("NO MATCH")) {
-        noMatchCount++;
-        responseText.className = "error";
-        responseText.innerText = `❌ Face not recognized. Attempt ${noMatchCount} of ${maxAttempts}`;
-      } else {
-        responseText.className = "error";
-        responseText.innerText = "Unexpected response.";
-      }
+    }
     })
+
     .catch(err => {
       responseText.innerText = "Error uploading: " + err.message;
       responseText.className = "error";
@@ -115,8 +102,6 @@
     }
   }
 </script>
-
-
 
 </body>
 </html>

@@ -59,13 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $sanitizedEmployeeId = preg_replace('/[^a-zA-Z0-9_-]/', '', $employeeId);
-        $fileName = 'employee_picture/' . $sanitizedEmployeeId . '.png';
+        $directory = '/var/www/html/bcb_berhad/employee_picture';
+        $fileName = $sanitizedEmployeeId . '.png'; // only filename
+        $fullPath = $directory . '/' . $fileName;
 
-        if (!is_dir('employee_picture')) {
-            mkdir('employee_picture', 0755, true); 
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
         }
-
-        if (file_put_contents($fileName, $data) === false) {
+        if (file_put_contents($fullPath, $data) === false) {
             die('Failed to save image to server');
         }
     } else {
