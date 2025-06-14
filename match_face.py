@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from deepface import DeepFace
 
 if len(sys.argv) < 2:
@@ -24,27 +25,23 @@ def find_match(captured_image_path, enrolled_faces):
             result = DeepFace.verify(
                 img1_path=captured_image_path,
                 img2_path=img_path,
-                enforce_detection=False  # Change to True if face detection is required
+                enforce_detection=False  # Set to True if you want strict face detection
             )
             if result["verified"]:
-                print(f"✅ Match found: {emp_id} ({os.path.basename(img_path)})")
                 return emp_id, os.path.basename(img_path)
         except Exception as e:
             print(f"Error comparing with {img_path}: {e}")
-    print("❌ No match found.")
     return None, None
 
 if __name__ == "__main__":
-    print("✅ Python script started")
-    
     if not os.path.exists(CAPTURED_IMAGE):
-        print(f"❌ Captured image not found at {CAPTURED_IMAGE}")
+        print(json.dumps({"status": "error", "message": "Captured image not found"}))
         sys.exit(1)
 
     faces = get_enrolled_faces_from_folder()
     emp_id, filename = find_match(CAPTURED_IMAGE, faces)
 
     if emp_id:
-        print(f"MATCHED: {filename}")
+        print(json.dumps({"status": "matched", "employee_id": emp_id, "filename": filename}))
     else:
-        print("NO MATCH")
+        print(json.dumps({"status": "no_match"}))

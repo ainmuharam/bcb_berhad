@@ -51,7 +51,6 @@
 
   const action = new URLSearchParams(window.location.search).get('action') || 'clock_in';
 
-  // Start webcam
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
       video.srcObject = stream;
@@ -60,7 +59,7 @@
         if (!matchFound) {
           captureAndSend();
         }
-      }, 5000); // <-- Changed interval to 5000ms (5 seconds)
+      }, 5000); // 5 seconds interval
     })
     .catch(err => {
       responseText.innerText = "Camera error: " + err.message;
@@ -80,14 +79,18 @@
     })
     .then(res => res.text())
     .then(data => {
+      console.log(data); // For debugging in browser console
       responseText.innerText = data;
-      responseText.className = "success";
-
-      // Check if Python script matched the face
+      
       if (data.includes("MATCHED:")) {
         matchFound = true;
         stopWebcam();
-        clearInterval(intervalId); // <-- Stop future interval checks
+        clearInterval(intervalId);
+        responseText.className = "success";
+      } else if (data.includes("NO MATCH")) {
+        responseText.className = "error";
+      } else {
+        responseText.className = "";
       }
     })
     .catch(err => {
@@ -104,7 +107,6 @@
     }
   }
 </script>
-
 
 </body>
 </html>
