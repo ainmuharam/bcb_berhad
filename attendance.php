@@ -90,9 +90,9 @@ class Attendance {
         $db = new Database();
         $attendance = new Attendance($db, $matched_emp_id);
 
-        if ($data['action'] === "clock_in") {
+        if ($action === "clock_in") {
             echo $attendance->clockIn();
-        } elseif ($data['action'] === "clock_out") {
+        } elseif ($action === "clock_out") {
             echo $attendance->clockOut();
         } else {
             echo "Invalid action.";
