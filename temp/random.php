@@ -27,15 +27,10 @@ if (isset($input['image'])) {
     $filepath = __DIR__ . '/' . $filename;
 
     if (file_put_contents($filepath, $decodedImage)) {
-        $output = shell_exec("python3 /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
+    $output = shell_exec("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
 
-        if (strpos($output, "MATCHED:") !== false) {
-            echo trim($output); 
-        } else {
-            echo "NO MATCH";
-        }
-    }
-    else {
+        echo "✅ Success: Image captured and saved as $filename";
+    } else {
         http_response_code(500);
         echo "❌ Failed to save image.";
     }
