@@ -43,8 +43,6 @@ if (isset($input['image'])) {
         }
 
         if ($result['status'] === 'matched') {
-            echo "✅ MATCHED: " . $result['employee_id'];
-
             $action = $input['action'] ?? 'clock_in';
             include_once __DIR__ . '/../database.php';
             include_once __DIR__ . '/../attendance.php';
@@ -68,6 +66,7 @@ if (isset($input['image'])) {
         } else {
             echo "❌ NO MATCH";
         }
+        
 
     } else {
         http_response_code(500);
