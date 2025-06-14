@@ -59,7 +59,7 @@
         if (!matchFound) {
           captureAndSend();
         }
-      }, 5000); // 5 seconds interval
+      }, 3000); // 5 seconds interval
     })
     .catch(err => {
       responseText.innerText = "Camera error: " + err.message;
