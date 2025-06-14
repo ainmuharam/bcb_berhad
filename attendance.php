@@ -86,8 +86,7 @@ class Attendance {
     }
 }
     if (!empty($output)) {
-        $matched_emp_id = trim(implode("", $output));
-
+        $matched_emp_id = trim($output);
         $db = new Database();
         $attendance = new Attendance($db, $matched_emp_id);
 
