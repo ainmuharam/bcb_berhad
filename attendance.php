@@ -87,15 +87,38 @@ if (!empty($output)) {
     $attendance = new Attendance($db, $matched_emp_id);
 
     if ($action === "clock_in") {
-        echo $attendance->clockIn();
+        $data = $attendance->clockIn();
+        echo json_encode([
+            "status" => "matched",
+            "employee_id" => $matched_emp_id,
+            "filename" => $result['filename'] ?? null, // Optional, based on your logic
+            "message" => $data,
+            "timestamp" => $data['time']
+        ]);
     } elseif ($action === "clock_out") {
-        echo $attendance->clockOut();
+        $result = $attendance->clockOut();
+        echo json_encode([
+            "status" => strpos($result, 'Error') !== false ? "error" : "matched",
+            "employee_id" => $matched_emp_id,
+            "message" => $result,
+            "timestamp" => date("H:i:s")
+        ]);
     } else {
-        echo "Invalid action.";
+        echo json_encode([
+            "status" => "error",
+            "employee_id" => $matched_emp_id,
+            "message" => "Invalid or missing action.",
+            "timestamp" => date("H:i:s")
+        ]);
     }
 
     $db->close();
 } else {
-    echo "Error: No match found!";
+    echo json_encode([
+        "status" => "error",
+        "message" => "No match found!",
+        "timestamp" => date("H:i:s")
+    ]);
 }
+
 ?>
