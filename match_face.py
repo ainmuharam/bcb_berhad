@@ -7,7 +7,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 CAPTURED_IMAGE = os.path.join("/var/www/html/bcb_berhad/temp", sys.argv[1])
-ENROLLED_FOLDER = "/var/www/html/employee_picture"
+ENROLLED_FOLDER = "/var/www/html/bcb_berhad/admin/employee_picture"
 
 def get_enrolled_faces_from_folder():
     enrolled_faces = {}
@@ -19,7 +19,6 @@ def get_enrolled_faces_from_folder():
             enrolled_faces[emp_id] = full_path
 
     return enrolled_faces
-
 
 def find_match(captured_image_path, enrolled_faces):
     for emp_id, img_path in enrolled_faces.items():
