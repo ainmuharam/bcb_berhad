@@ -23,7 +23,7 @@ if (isset($input['image'])) {
     }
 
     $filename = 'capture_' . uniqid() . '.jpg';
-    $filepath = __DIR__ . '/temp/' . $filename; // Save into temp folder (optional)
+    $filepath = __DIR__ . '/' . $filename;
 
     if (file_put_contents($filepath, $decodedImage)) {
         // Run Python and capture result
