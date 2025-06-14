@@ -2,8 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 $input = json_decode(file_get_contents('php://input'), true);
-$output = shell_exec('python3 /var/www/html/bcb_berhad/face_match.py');
-echo $output;
 
 
 if (isset($input['image'])) {
@@ -29,6 +27,8 @@ if (isset($input['image'])) {
     $filepath = __DIR__ . '/' . $filename;
 
     if (file_put_contents($filepath, $decodedImage)) {
+        $output = shell_exec("python3 /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
+
         echo "✅ Success: Image captured and saved as $filename";
     } else {
         http_response_code(500);

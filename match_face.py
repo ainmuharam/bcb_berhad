@@ -3,7 +3,11 @@ import sys
 import mysql.connector
 from deepface import DeepFace
 
-CAPTURED_IMAGE = "/var/www/html/bcb_berhad/temp/captured.jpg"  # Assume last saved image
+if len(sys.argv) < 2:
+    print("No filename provided.")
+    sys.exit(1)
+
+CAPTURED_IMAGE = os.path.join("/var/www/html/bcb_berhad/temp", sys.argv[1])
 
 def get_enrolled_faces():
     try:
