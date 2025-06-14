@@ -27,10 +27,12 @@ if (isset($input['image'])) {
     $filepath = __DIR__ . '/' . $filename;
 
 if (file_put_contents($filepath, $decodedImage)) {
-    $output = shell_exec("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
+$command = "/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename) . " > /tmp/match_output.log 2>&1";
+shell_exec($command);
 
-    echo "✅ Success: Image captured and saved as $filename\n";
-    echo $output; // <-- Add this line to show the result from the Python script
+echo file_get_contents('/tmp/match_output.log');
+
+
 } else {
     http_response_code(500);
     echo "❌ Failed to save image.";
