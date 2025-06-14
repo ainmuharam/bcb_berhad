@@ -2,8 +2,7 @@ import os
 import sys
 import json
 from deepface import DeepFace
-os.environ["DEEPFACE_HOME"] = "/tmp/.deepface"
-
+os.environ["HOME"] = "/var/www"
 
 def main():
     try:
