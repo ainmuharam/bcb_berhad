@@ -32,6 +32,7 @@ def main():
                     enforce_detection=False
                 )
                 if result["verified"]:
+                    # Return just the employee ID as a string (not JSON) when matched
                     return emp_id
             except Exception as e:
                 continue  # Skip any comparison errors
@@ -43,7 +44,9 @@ def main():
 
 if __name__ == "__main__":
     result = main()
+    # If result is just an employee ID (string), print it directly
     if isinstance(result, str):
         print(result)
+    # Otherwise print as JSON (for errors/no_match cases)
     else:
         print(json.dumps(result))

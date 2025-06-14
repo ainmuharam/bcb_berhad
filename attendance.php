@@ -92,7 +92,7 @@ class Attendance {
 
         if ($action === "clock_in") {
             echo $attendance->clockIn();
-        } elseif ($action === "clock_out") {
+        } elseif ($data['action'] === "clock_out") {
             echo $attendance->clockOut();
         } else {
             echo "Invalid action.";
