@@ -25,52 +25,54 @@ if (isset($input['image'])) {
     $filename = 'capture_' . uniqid() . '.jpg';
     $filepath = __DIR__ . '/' . $filename;
 
-   if (file_put_contents($filepath, $decodedImage)) {
-    $command = escapeshellcmd("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
-    $output = shell_exec($command);
+    if (file_put_contents($filepath, $decodedImage)) {
+        $command = escapeshellcmd("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
+        $output = shell_exec($command);
 
-    if ($output === null) {
-        echo "❌ Python script did not return any output";
-        exit;
-    }
-
-    $result = json_decode($output, true);
-
-    if ($result === null || json_last_error() !== JSON_ERROR_NONE) {
-        echo "❌ Invalid JSON output from Python script: " . json_last_error_msg();
-        echo "\nRaw output: " . htmlspecialchars($output);
-        exit;
-    }
-
-    if ($result['status'] === 'matched') {
-        $action = $input['action'] ?? 'clock_in';
-        include_once __DIR__ . '/../database.php';
-        include_once __DIR__ . '/../attendance.php';
-        date_default_timezone_set("Asia/Kuala_Lumpur");
-
-        $matched_emp_id = $result['employee_id'];
-        $db = new Database();
-        $attendance = new Attendance($db, $matched_emp_id);
-
-        if ($action === "clock_in") {
-            $message = $attendance->clockIn();
-        } elseif ($action === "clock_out") {
-            $message = $attendance->clockOut();
-        } else {
-            $message = "Invalid action.";
+        if ($output === null) {
+            echo "❌ Python script did not return any output";
+            exit;
         }
 
-        $db->close();
+        $result = json_decode($output, true);
 
-        // ✅ This is the ONLY output sent to user
-        echo $message;
+        if ($result === null || json_last_error() !== JSON_ERROR_NONE) {
+            echo "❌ Invalid JSON output from Python script: " . json_last_error_msg();
+            echo "\nRaw output: " . htmlspecialchars($output);
+            exit;
+        }
+
+        if ($result['status'] === 'matched') {
+            $action = $input['action'] ?? 'clock_in';
+            include_once __DIR__ . '/../database.php';
+            include_once __DIR__ . '/../attendance.php';
+            date_default_timezone_set("Asia/Kuala_Lumpur");
+
+            $action = $input['action'] ?? 'clock_in';
+            $matched_emp_id = $result['employee_id'];
+
+            $db = new Database();
+            $attendance = new Attendance($db, $matched_emp_id);
+
+            if ($action === "clock_in") {
+                echo $attendance->clockIn();
+            } elseif ($action === "clock_out") {
+                echo $attendance->clockOut();
+            } else {
+                $message = "Invalid action.";
+            }
+
+            $db->close();
+        } else {
+            echo "❌ NO MATCH";
+        }
 
     } else {
-        echo "❌ NO MATCH";
+        http_response_code(500);
+        echo "❌ Failed to save image.";
     }
-
 } else {
-    http_response_code(500);
-    echo "❌ Failed to save image.";
+    http_response_code(400);
+    echo "No image data received.";
 }
-}
+?>

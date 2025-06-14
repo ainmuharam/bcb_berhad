@@ -32,7 +32,7 @@ def main():
                     enforce_detection=False
                 )
                 if result["verified"]:
-                    return {"status": "matched", "employee_id": emp_id, "filename": os.path.basename(img_path)}
+                    return emp_id
             except Exception as e:
                 continue  # Skip any comparison errors
 
@@ -43,4 +43,7 @@ def main():
 
 if __name__ == "__main__":
     result = main()
-    print(json.dumps(result))
+    if isinstance(result, str):
+        print(result)
+    else:
+        print(json.dumps(result))
