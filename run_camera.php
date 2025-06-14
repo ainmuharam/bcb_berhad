@@ -96,7 +96,7 @@ class Attendance {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST["action"];
 
-    $command = "python camera.py " . escapeshellarg($action);
+    $command = "python match_face.py " . escapeshellarg($action);
     exec($command, $output, $return_var);
 
     if ($return_var == 0) {
