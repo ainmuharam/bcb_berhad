@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $sanitizedEmployeeId = preg_replace('/[^a-zA-Z0-9_-]/', '', $employeeId);
-        $directory = '/var/www/html/bcb_berhad/employee_picture';
+        $directory = '/var/www/html/bcb_berhad/admin/employee_picture';
         $fileName = $sanitizedEmployeeId . '.png'; // only filename
         $fullPath = $directory . '/' . $fileName;
 
