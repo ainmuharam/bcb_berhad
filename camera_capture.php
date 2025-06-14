@@ -60,7 +60,7 @@
           if (!matchFound) {
             captureAndSend();
           }
-        }, 1500); // every 1.5 seconds
+        }, 1500); 
       })
       .catch(err => {
         responseText.innerText = "Camera error: " + err.message;
@@ -70,33 +70,7 @@
     function captureAndSend() {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = canvas.toDataURL('image/jpeg');
-
-      fetch('run_camera.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: imageData, action: action })
-      })
-      .then(response => response.text())
-      .then(data => {
-        const lower = data.toLowerCase();
-
-        if (lower.includes("success") || lower.includes("matched") || /^\d+$/.test(data.trim())) {
-          responseText.innerText = "Matched: " + data;
-          responseText.className = "success";
-          matchFound = true;
-          stopWebcam();
-          clearInterval(intervalId);
-        } else {
-          responseText.innerText = data;
-          responseText.className = "error";
-        }
-      })
-      .catch(err => {
-        responseText.innerText = "Error connecting to server.";
-        responseText.className = "error";
-      });
     }
-
     function stopWebcam() {
       const stream = video.srcObject;
       if (stream) {
