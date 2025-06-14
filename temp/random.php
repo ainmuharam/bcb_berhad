@@ -55,23 +55,17 @@ if (isset($input['image'])) {
             $attendance = new Attendance($db, $matched_emp_id);
 
             if ($action === "clock_in") {
-                echo "\n" . $attendance->clockIn();
+                echo $attendance->clockIn();
             } elseif ($action === "clock_out") {
-                echo "\n" . $attendance->clockOut();
+                echo $attendance->clockOut();
             } else {
-                echo "\nInvalid action.";
+                $message = "Invalid action.";
             }
 
             $db->close();
         } else {
             echo "❌ NO MATCH";
         }
-        echo json_encode([
-        "status" => "matched",
-        "employee_id" => $matched_emp_id,
-        "message" => $message,
-        "timestamp" => date("H:i:s")
-    ]);
 
     } else {
         http_response_code(500);
