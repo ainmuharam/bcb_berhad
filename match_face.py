@@ -2,6 +2,8 @@ import os
 import sys
 import json
 from deepface import DeepFace
+os.environ["DEEPFACE_HOME"] = "/tmp/.deepface"
+
 
 def main():
     try:
