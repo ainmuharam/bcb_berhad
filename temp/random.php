@@ -25,60 +25,59 @@ if (isset($input['image'])) {
     $filename = 'capture_' . uniqid() . '.jpg';
     $filepath = __DIR__ . '/' . $filename;
 
-    if (file_put_contents($filepath, $decodedImage)) {
-        $command = escapeshellcmd("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
-        $output = shell_exec($command);
+// ... [previous code remains the same until line 45]
 
-        if ($output === null) {
-            echo "❌ Python script did not return any output";
-            exit;
-        }
+if (file_put_contents($filepath, $decodedImage)) {
+    $command = escapeshellcmd("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
+    $output = shell_exec($command);
 
-        // First check if output is just an employee ID (matched case)
-        if (is_numeric(trim($output))) {
-            $matched_emp_id = trim($output);
-            include_once __DIR__ . '/../database.php';
-            include_once __DIR__ . '/../attendance.php';
-            date_default_timezone_set("Asia/Kuala_Lumpur");
-
-            $action = $input['action'] ?? 'clock_in';
-            $db = new Database();
-            $attendance = new Attendance($db, $matched_emp_id);
-
-            if ($action === "clock_in") {
-                echo $attendance->clockIn();
-            } elseif ($action === "clock_out") {
-                echo $attendance->clockOut();
-            } else {
-                echo "Invalid action.";
-            }
-
-            $db->close();
-        } 
-        // Otherwise treat as JSON response
-        else {
-            $result = json_decode($output, true);
-            
-            if ($result === null || json_last_error() !== JSON_ERROR_NONE) {
-                echo "❌ Invalid JSON output from Python script: " . json_last_error_msg();
-                echo "\nRaw output: " . htmlspecialchars($output);
-                exit;
-            }
-
-            if (isset($result['status']) && $result['status'] === 'matched') {
-                // This case should theoretically never happen now
-                echo "❌ System error: Unexpected JSON match format";
-            } else {
-                echo "❌ NO MATCH";
-            }
-        }
-
-        // Clean up the temporary image
-        @unlink($filepath);
-    } else {
-        http_response_code(500);
-        echo "❌ Failed to save image.";
+    if ($output === null) {
+        echo "❌ Python script did not return any output";
+        exit;
     }
+
+    // Handle numeric output (matched case)
+    if (is_numeric(trim($output))) {
+        $matched_emp_id = trim($output);
+        include_once __DIR__ . '/../database.php';
+        include_once __DIR__ . '/../attendance.php';
+        date_default_timezone_set("Asia/Kuala_Lumpur");
+
+        $action = $input['action'] ?? 'clock_in'; // Define action once here
+        
+        $db = new Database();
+        $attendance = new Attendance($db, $matched_emp_id);
+
+        // Clear and consistent action handling
+        $response = "";
+        if ($action === "clock_in") {
+            $response = $attendance->clockIn();
+        } elseif ($action === "clock_out") {
+            $response = $attendance->clockOut();
+        } else {
+            $response = "Invalid action specified.";
+        }
+        
+        echo $response;
+        $db->close();
+
+    } 
+    else {
+        $result = json_decode($output, true);
+        if ($result === null || json_last_error() !== JSON_ERROR_NONE) {
+            echo "❌ Invalid response from face matching system";
+        } elseif (isset($result['status']) && $result['status'] === 'no_match') {
+            echo "❌ NO MATCH";
+        } else {
+            echo "❌ Error: " . ($result['message'] ?? 'Unknown error');
+        }
+    }
+
+    @unlink($filepath); // Clean up temp file
+} else {
+    http_response_code(500);
+    echo "❌ Failed to save image.";
+}
 } else {
     http_response_code(400);
     echo "No image data received.";
