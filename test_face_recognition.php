@@ -46,7 +46,7 @@ header('Content-Type: text/html; charset=utf-8');
             const imageData = canvas.toDataURL('image/jpeg').split(',')[1];
             
             // Send to server
-            fetch('process_face.py', {
+            fetch('process.py', {
                 method: 'POST',
                 body: JSON.stringify({ image: imageData }),
                 headers: { 'Content-Type': 'application/json' }
