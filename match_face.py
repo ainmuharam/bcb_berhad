@@ -20,7 +20,7 @@ def get_enrolled_faces():
         enrolled_faces = {}
         for emp_id, img_path in results:
             if img_path:
-                full_path = os.path.join(r"C:\xampp\htdocs\bcb_berhad\admin", img_path)
+                full_path = os.path.join(r"C:\xampp\htdocs\bcb_berhad\admin\employee_picture", img_path)
                 if os.path.exists(full_path):
                     enrolled_faces[emp_id] = full_path
 
