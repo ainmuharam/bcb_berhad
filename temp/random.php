@@ -26,8 +26,10 @@ if (isset($input['image'])) {
     $filepath = __DIR__ . '/' . $filename;
 
     if (file_put_contents($filepath, $decodedImage)) {
+        // ✅ Execute Python script
         $command = escapeshellcmd("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
-        $result = json_decode($output, true);
+        $output = shell_exec($command); // ✅ MISSING in your version
+
         if ($output === null) {
             echo "❌ Python script did not return any output";
             exit;
@@ -41,44 +43,46 @@ if (isset($input['image'])) {
             exit;
         }
 
-if ($result['status'] === 'matched') {
-    $action = $input['action'] ?? 'clock_in';
-    include_once __DIR__ . '/../database.php';
-    include_once __DIR__ . '/../attendance.php';
-    date_default_timezone_set("Asia/Kuala_Lumpur");
+        if ($result['status'] === 'matched') {
+            $action = $input['action'] ?? 'clock_in';
+            include_once __DIR__ . '/../database.php';
+            include_once __DIR__ . '/../attendance.php';
+            date_default_timezone_set("Asia/Kuala_Lumpur");
 
-    $matched_emp_id = $result['employee_id'];
-    $db = new Database();
-    $attendance = new Attendance($db, $matched_emp_id);
+            $matched_emp_id = $result['employee_id'];
+            $db = new Database();
+            $attendance = new Attendance($db, $matched_emp_id);
 
-    if ($action === "clock_in") {
-        $message = $attendance->clockIn();
-    } elseif ($action === "clock_out") {
-        $message = $attendance->clockOut();
-    } else {
-        $message = "Invalid action.";
-    }
+            if ($action === "clock_in") {
+                $message = $attendance->clockIn();
+            } elseif ($action === "clock_out") {
+                $message = $attendance->clockOut();
+            } else {
+                $message = "Invalid action.";
+            }
 
-    echo "\n" . $message;
+            echo json_encode([
+                "status" => "matched",
+                "employee_id" => $matched_emp_id,
+                "filename" => $result['filename'] ?? null,
+                "message" => $message,
+                "timestamp" => date("H:i:s")
+            ]);
 
-    echo json_encode([
-        "status" => "matched",
-        "employee_id" => $matched_emp_id,
-        "message" => $message,
-        "timestamp" => date("H:i:s")
-    ]);
-
-    $db->close();
-} else {
-    echo "❌ NO MATCH";
-}
+            $db->close();
+        } else {
+            echo json_encode([
+                "status" => "no_match",
+                "message" => "❌ NO MATCH"
+            ]);
+        }
 
     } else {
         http_response_code(500);
-        echo "❌ Failed to save image.";
+        echo json_encode(["status" => "error", "message" => "❌ Failed to save image."]);
     }
 } else {
     http_response_code(400);
-    echo "No image data received.";
+    echo json_encode(["status" => "error", "message" => "No image data received."]);
 }
 ?>

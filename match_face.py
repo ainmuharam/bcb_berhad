@@ -2,6 +2,7 @@ import os
 import sys
 import json
 from deepface import DeepFace
+
 os.environ["HOME"] = "/var/www"
 
 def main():
@@ -23,7 +24,7 @@ def main():
                 full_path = os.path.join(ENROLLED_FOLDER, filename)
                 enrolled_faces[emp_id] = full_path
 
-        # Find matches
+        # Try matching with DeepFace
         for emp_id, img_path in enrolled_faces.items():
             try:
                 result = DeepFace.verify(
@@ -32,10 +33,13 @@ def main():
                     enforce_detection=False
                 )
                 if result["verified"]:
-                    # Return just the employee ID as a string (not JSON) when matched
-                    return emp_id
-            except Exception as e:
-                continue  # Skip any comparison errors
+                    return {
+                        "status": "matched",
+                        "employee_id": emp_id,
+                        "filename": os.path.basename(img_path)
+                    }
+            except Exception:
+                continue
 
         return {"status": "no_match"}
 
@@ -44,9 +48,4 @@ def main():
 
 if __name__ == "__main__":
     result = main()
-    # If result is just an employee ID (string), print it directly
-    if isinstance(result, str):
-        print(result)
-    # Otherwise print as JSON (for errors/no_match cases)
-    else:
-        print(json.dumps(result))
+    print(json.dumps(result))  # Always print JSON for consistent PHP parsing
