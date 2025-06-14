@@ -3,47 +3,43 @@ import sys
 import json
 from deepface import DeepFace
 
-if len(sys.argv) < 2:
-    print(json.dumps({"status": "error", "message": "No filename provided"}))
-    sys.exit(1)
+def main():
+    try:
+        if len(sys.argv) < 2:
+            return {"status": "error", "message": "No filename provided"}
 
-CAPTURED_IMAGE = os.path.join("/var/www/html/bcb_berhad/temp", sys.argv[1])
-ENROLLED_FOLDER = "/var/www/html/bcb_berhad/admin/employee_picture"
+        CAPTURED_IMAGE = os.path.join("/var/www/html/bcb_berhad/temp", sys.argv[1])
+        ENROLLED_FOLDER = "/var/www/html/bcb_berhad/admin/employee_picture"
 
-def get_enrolled_faces_from_folder():
-    enrolled_faces = {}
-    for filename in os.listdir(ENROLLED_FOLDER):
-        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-            emp_id = os.path.splitext(filename)[0]
-            full_path = os.path.join(ENROLLED_FOLDER, filename)
-            enrolled_faces[emp_id] = full_path
-    return enrolled_faces
+        if not os.path.exists(CAPTURED_IMAGE):
+            return {"status": "error", "message": "Captured image not found"}
 
-def find_match(captured_image_path, enrolled_faces):
-    for emp_id, img_path in enrolled_faces.items():
-        try:
-            result = DeepFace.verify(
-                img1_path=captured_image_path,
-                img2_path=img_path,
-                enforce_detection=False
-            )
-            if result["verified"]:
-                return emp_id, os.path.basename(img_path)
-        except Exception as e:
-            # Comment this out to prevent non-JSON output
-            # print(f"Error comparing with {img_path}: {e}")
-            pass
-    return None, None
+        # Get enrolled faces
+        enrolled_faces = {}
+        for filename in os.listdir(ENROLLED_FOLDER):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                emp_id = os.path.splitext(filename)[0]
+                full_path = os.path.join(ENROLLED_FOLDER, filename)
+                enrolled_faces[emp_id] = full_path
+
+        # Find matches
+        for emp_id, img_path in enrolled_faces.items():
+            try:
+                result = DeepFace.verify(
+                    img1_path=CAPTURED_IMAGE,
+                    img2_path=img_path,
+                    enforce_detection=False
+                )
+                if result["verified"]:
+                    return {"status": "matched", "employee_id": emp_id, "filename": os.path.basename(img_path)}
+            except Exception as e:
+                continue  # Skip any comparison errors
+
+        return {"status": "no_match"}
+
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 if __name__ == "__main__":
-    if not os.path.exists(CAPTURED_IMAGE):
-        print(json.dumps({"status": "error", "message": "Captured image not found"}))
-        sys.exit(1)
-
-    faces = get_enrolled_faces_from_folder()
-    emp_id, filename = find_match(CAPTURED_IMAGE, faces)
-
-    if emp_id:
-        print(json.dumps({"status": "matched", "employee_id": emp_id, "filename": filename}))
-    else:
-        print(json.dumps({"status": "no_match"}))
+    result = main()
+    print(json.dumps(result))

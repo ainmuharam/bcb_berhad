@@ -26,11 +26,21 @@ if (isset($input['image'])) {
     $filepath = __DIR__ . '/' . $filename;
 
     if (file_put_contents($filepath, $decodedImage)) {
-        // Run Python and capture result
         $command = escapeshellcmd("/var/www/html/bcb_berhad/venv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($filename));
         $output = shell_exec($command);
 
+        if ($output === null) {
+            echo "❌ Python script did not return any output";
+            exit;
+        }
+
         $result = json_decode($output, true);
+
+        if ($result === null) {
+            echo "❌ Invalid JSON output from Python script: " . json_last_error_msg();
+            echo "Raw output: " . htmlspecialchars($output);
+            exit;
+        }
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             echo "❌ Python script error or invalid JSON output: $output";
