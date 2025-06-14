@@ -27,19 +27,7 @@ class Attendance {
         return $attendance;
     }
 
-    public function clockIn() {
-        $sql = "INSERT INTO face_recognition (emp_id, action, time, attendance_date) VALUES (?, 'clock_in', ?, ?)";
-        $stmt = $this->db->conn->prepare($sql);
-        $stmt->bind_param("sss", $this->emp_id, $this->current_time, $this->today_date);
-        $stmt->execute();
-        $stmt->close();
-    
-        $this->updateDailySummary('clock_in');
-    
-        return "Clock In Success! Employee: " . $this->emp_id . " at " . $this->current_time;
-    }
-    
-        public function hasClockedInToday() {
+    public function hasClockedInToday() {
         $sql = "SELECT 1 FROM face_recognition WHERE emp_id = ? AND attendance_date = ? AND action = 'clock_in'";
         $stmt = $this->db->conn->prepare($sql);
         $stmt->bind_param("ss", $this->emp_id, $this->today_date);
@@ -49,8 +37,19 @@ class Attendance {
         $stmt->close();
         return $hasClockIn;
     }
-    
-    
+
+    public function clockIn() {
+        $sql = "INSERT INTO face_recognition (emp_id, action, time, attendance_date) VALUES (?, 'clock_in', ?, ?)";
+        $stmt = $this->db->conn->prepare($sql);
+        $stmt->bind_param("sss", $this->emp_id, $this->current_time, $this->today_date);
+        $stmt->execute();
+        $stmt->close();
+
+        $this->updateDailySummary('clock_in');
+
+        return "Clock In Success! Employee: " . $this->emp_id . " at " . $this->current_time;
+    }
+
     public function clockOut() {
         if (!$this->hasClockedInToday()) {
             return "Error: You must clock in first before clocking out";
@@ -61,12 +60,11 @@ class Attendance {
         $stmt->bind_param("sss", $this->emp_id, $this->current_time, $this->today_date);
         $stmt->execute();
         $stmt->close();
-    
+
         $this->updateDailySummary('clock_out');
-    
+
         return "Clock Out Success! Employee: " . $this->emp_id . " at " . $this->current_time;
     }
-    
 
     public function updateDailySummary($action) {
         if ($action == 'clock_in') {
@@ -82,33 +80,60 @@ class Attendance {
         } else {
             return;
         }
-    
+
         $stmt = $this->db->conn->prepare($sql);
         $stmt->bind_param("sss", $this->emp_id, $this->current_time, $this->today_date);
         $stmt->execute();
         $stmt->close();
     }
-    
-    
-    
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $action = $_POST["action"];
+    $data = json_decode(file_get_contents("php://input"), true);
 
-$command = "/root/myenv/bin/python /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($action);
+    if (!isset($data['image']) || !isset($data['action'])) {
+        http_response_code(400);
+        echo "Invalid input";
+        exit;
+    }
+
+    $imageData = $data['image'];
+    $action = escapeshellarg($data['action']);
+
+    // Extract base64 image data
+    if (preg_match('/^data:image\/\w+;base64,/', $imageData)) {
+        $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $imageData);
+    }
+    $imageData = base64_decode($imageData);
+
+    if (!$imageData) {
+        echo "Error decoding image";
+        exit;
+    }
+
+    // Save to a temporary file
+    $tempImagePath = "/tmp/captured_image.jpg";
+    file_put_contents($tempImagePath, $imageData);
+
+    // Run the Python script with temp image
+    $command = "/root/myenv/bin/python3 /var/www/html/bcb_berhad/match_face.py " . escapeshellarg($tempImagePath) . " " . $action;
     exec($command, $output, $return_var);
 
-    if ($return_var == 0) {
-        $matched_image = trim(implode("", $output));
+    // Remove temp image
+    unlink($tempImagePath);
+
+    if ($return_var === 0 && !empty($output)) {
+        $matched_emp_id = trim(implode("", $output));
 
         $db = new Database();
-        $attendance = new Attendance($db, $matched_image);
+        $attendance = new Attendance($db, $matched_emp_id);
 
-        if ($action == "clock_in") {
+        if ($data['action'] === "clock_in") {
             echo $attendance->clockIn();
-        } elseif ($action == "clock_out") {
+        } elseif ($data['action'] === "clock_out") {
             echo $attendance->clockOut();
+        } else {
+            echo "Invalid action.";
         }
 
         $db->close();
@@ -116,5 +141,4 @@ $command = "/root/myenv/bin/python /var/www/html/bcb_berhad/match_face.py " . es
         echo "Error: No match found!";
     }
 }
-
 ?>

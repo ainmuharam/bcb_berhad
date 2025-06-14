@@ -11,49 +11,65 @@
       margin: 0;
       padding: 40px;
     }
-    video {
+    video, canvas {
       border: 2px solid #333;
       border-radius: 8px;
+      margin-top: 20px;
     }
     #response {
       font-size: 18px;
-      color: green;
       margin-top: 20px;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
     }
   </style>
 </head>
 <body>
 
-  <h2><?php echo ucfirst($_GET['action']); ?> - Real-Time Face Recognition</h2>
-  <video id="video" width="320" height="240" autoplay></video>
+  <h2>
+    <?php 
+      $action = isset($_GET['action']) ? htmlspecialchars($_GET['action']) : 'clock_in'; 
+      echo ucfirst($action); 
+    ?> - Real-Time Face Recognition
+  </h2>
+
+  <video id="video" width="320" height="240" autoplay muted></video>
+  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
   <p id="response"></p>
 
   <script>
     const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
     const responseText = document.getElementById('response');
+    const ctx = canvas.getContext('2d');
     let intervalId;
     let matchFound = false;
 
-    // Start webcam
+    const action = new URLSearchParams(window.location.search).get('action') || 'clock_in';
+
+    // Start the webcam stream
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         video.srcObject = stream;
 
-        // Start interval capturing every 1 second
         intervalId = setInterval(() => {
-          if (!matchFound) captureAndSend();
-        }, 1000);
+          if (!matchFound) {
+            captureAndSend();
+          }
+        }, 1500); // every 1.5 seconds
       })
-      .catch(err => alert("Camera error: " + err));
+      .catch(err => {
+        responseText.innerText = "Camera error: " + err.message;
+        responseText.className = "error";
+      });
 
     function captureAndSend() {
-      const canvas = document.createElement('canvas');
-      canvas.width = 320;
-      canvas.height = 240;
-      canvas.getContext('2d').drawImage(video, 0, 0);
-
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const imageData = canvas.toDataURL('image/jpeg');
-      const action = new URLSearchParams(window.location.search).get('action');
 
       fetch('run_camera.php', {
         method: 'POST',
@@ -62,29 +78,31 @@
       })
       .then(response => response.text())
       .then(data => {
-        if (data.toLowerCase().includes("success") || data.toLowerCase().includes("matched")) {
-          responseText.innerText = data;
-          responseText.style.color = "green";
-          matchFound = true;
+        const lower = data.toLowerCase();
 
-          clearInterval(intervalId);
+        if (lower.includes("success") || lower.includes("matched") || /^\d+$/.test(data.trim())) {
+          responseText.innerText = "Matched: " + data;
+          responseText.className = "success";
+          matchFound = true;
           stopWebcam();
+          clearInterval(intervalId);
         } else {
           responseText.innerText = data;
-          responseText.style.color = "red";
+          responseText.className = "error";
         }
       })
       .catch(err => {
-        responseText.innerText = "Error: Could not connect to server.";
-        responseText.style.color = "red";
+        responseText.innerText = "Error connecting to server.";
+        responseText.className = "error";
       });
     }
 
     function stopWebcam() {
       const stream = video.srcObject;
-      const tracks = stream.getTracks();
-      tracks.forEach(track => track.stop());
-      video.srcObject = null;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+      }
     }
   </script>
 </body>
