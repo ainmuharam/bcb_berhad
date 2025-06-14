@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Camera Capture</title>
+  <title>Real-Time Face Recognition</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,38 +15,38 @@
       border: 2px solid #333;
       border-radius: 8px;
     }
-    .button {
+    #response {
+      font-size: 18px;
+      color: green;
       margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .button:hover {
-      background: #45a049;
     }
   </style>
 </head>
 <body>
 
-  <h2><?php echo ucfirst($_GET['action']); ?> - Face Recognition</h2>
+  <h2><?php echo ucfirst($_GET['action']); ?> - Real-Time Face Recognition</h2>
   <video id="video" width="320" height="240" autoplay></video>
-  <br>
-  <button onclick="captureImage()" class="button">Capture & Submit</button>
   <p id="response"></p>
 
   <script>
     const video = document.getElementById('video');
+    const responseText = document.getElementById('response');
+    let intervalId;
+    let matchFound = false;
 
-    // Start webcam stream
+    // Start webcam
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
+      .then(stream => {
+        video.srcObject = stream;
+
+        // Start interval capturing every 1 second
+        intervalId = setInterval(() => {
+          if (!matchFound) captureAndSend();
+        }, 1000);
+      })
       .catch(err => alert("Camera error: " + err));
 
-    function captureImage() {
+    function captureAndSend() {
       const canvas = document.createElement('canvas');
       canvas.width = 320;
       canvas.height = 240;
@@ -62,11 +62,29 @@
       })
       .then(response => response.text())
       .then(data => {
-        document.getElementById('response').innerText = data;
+        if (data.toLowerCase().includes("success") || data.toLowerCase().includes("matched")) {
+          responseText.innerText = data;
+          responseText.style.color = "green";
+          matchFound = true;
+
+          clearInterval(intervalId);
+          stopWebcam();
+        } else {
+          responseText.innerText = data;
+          responseText.style.color = "red";
+        }
       })
       .catch(err => {
-        document.getElementById('response').innerText = "Error: Could not connect to server.";
+        responseText.innerText = "Error: Could not connect to server.";
+        responseText.style.color = "red";
       });
+    }
+
+    function stopWebcam() {
+      const stream = video.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+      video.srcObject = null;
     }
   </script>
 </body>
