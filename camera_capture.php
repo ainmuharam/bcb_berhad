@@ -71,12 +71,15 @@
     const imageData = canvas.toDataURL('image/jpeg');
 
     fetch('temp/random.php', {
-      method: 'POST',
-      body: JSON.stringify({ image: imageData }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+        method: 'POST',
+        body: JSON.stringify({ 
+            image: imageData, 
+            action: action 
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+        })
     .then(res => res.text())
     .then(data => {
       console.log(data); // For debugging in browser console
