@@ -24,14 +24,16 @@ def main():
                 full_path = os.path.join(ENROLLED_FOLDER, filename)
                 enrolled_faces[emp_id] = full_path
 
-        # Try matching with DeepFace
+        model = DeepFace.build_model("Facenet")
+
+
         for emp_id, img_path in enrolled_faces.items():
             try:
                 result = DeepFace.verify(
                     img1_path=CAPTURED_IMAGE,
                     img2_path=img_path,
                     enforce_detection=False,
-                    model_name="Facenet"
+                    model_name="Facenet",
                     model=model,
                 )
             if result["verified"] and result["distance"] < 0.4:
