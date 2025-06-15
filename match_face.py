@@ -31,7 +31,8 @@ def main():
                     img1_path=CAPTURED_IMAGE,
                     img2_path=img_path,
                     enforce_detection=False,
-                    model_name="Facenet512"
+                    model_name="Facenet"
+                    model=model,
                 )
             if result["verified"] and result["distance"] < 0.4:
                     return {
