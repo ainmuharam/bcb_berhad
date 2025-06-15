@@ -81,23 +81,32 @@
         }
         })
     .then(res => res.text())
-.then(data => {
-  console.log(data);  // Keep for debugging
-  if (data.status === "matched") {
-    matchFound = true;
-    stopWebcam();
-    clearInterval(intervalId);
-    responseText.innerText = `MATCHED: ${data.employee_id} CLOCK IN: ${data.time}`;
-    responseText.className = "success";
+    .then(text => {
+    console.log(text);  
+    let data;
+        try {
+            data = JSON.parse(text); // Safely parse the JSON string
+        } catch (e) {
+            responseText.innerText = "Invalid response format.";
+            responseText.className = "error";
+            return;
+        }
 
-    setTimeout(() => {
-      window.location.href = data.redirect || 'scan_face.php';
-    }, 1000);
-  } else {
-    responseText.innerText = data.message || "No match found.";
-    responseText.className = "error";
-  }
-})
+        if (data.status === "matched") {
+            matchFound = true;
+            stopWebcam();
+            clearInterval(intervalId);
+            responseText.innerText = `MATCHED: ${data.employee_id} CLOCK IN: ${data.time}`;
+            responseText.className = "success";
+
+            setTimeout(() => {
+            window.location.href = data.redirect || 'scan_face.php';
+            }, 1000);
+        } else {
+            responseText.innerText = data.message || "No match found.";
+            responseText.className = "error";
+        }
+        })
 
     .catch(err => {
       responseText.innerText = "Error uploading: " + err.message;
