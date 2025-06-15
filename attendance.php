@@ -97,8 +97,15 @@ if (!empty($output)) {
             "message" => $data,
             "timestamp" => $data['time']
         ]));
-
-        echo "MATCHED: $matched_emp_id CLOCK IN: " . $data['time'];
+        header('Content-Type: application/json');
+        echo json_encode([
+            "redirect" => "scan_face.php",
+            "status" => "matched",
+            "employee_id" => $matched_emp_id,
+            "filename" => $result['filename'] ?? null,
+            "message" => $data,
+            "timestamp" => $data['time']
+        ]);
     } elseif ($action === "clock_out") {
     } else {
         echo "Invalid action.";

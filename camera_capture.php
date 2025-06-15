@@ -80,26 +80,28 @@
             'Content-Type': 'application/json'
         }
         })
-    .then(res => res.text())
-    .then(data => {
-      console.log(data); 
-      responseText.innerText = data;
-      
-      if (data.includes("MATCHED:")) {
-        matchFound = true;
-        stopWebcam();
-        clearInterval(intervalId);
-        responseText.className = "success";
-      } else if (data.includes("NO MATCH")) {
+        .then(res => res.json())
+        .then(data => {
+        console.log(data);
+        if (data.status === "matched") {
+            matchFound = true;
+            stopWebcam();
+            clearInterval(intervalId);
+            responseText.innerText = `MATCHED: ${data.employee_id} CLOCK IN: ${data.message.time}`;
+            responseText.className = "success";
+
+            setTimeout(() => {
+            window.location.href = data.redirect || 'scan_face.php';
+            }, 2000);
+        } else {
+            responseText.innerText = data.message || "No match found.";
+            responseText.className = "error";
+        }
+        })
+        .catch(err => {
+        responseText.innerText = "Error uploading: " + err.message;
         responseText.className = "error";
-      } else {
-        responseText.className = "";
-      }
-    })
-    .catch(err => {
-      responseText.innerText = "Error uploading: " + err.message;
-      responseText.className = "error";
-    });
+        });
   }
 
   function stopWebcam() {
