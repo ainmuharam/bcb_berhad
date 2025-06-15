@@ -80,7 +80,7 @@
             'Content-Type': 'application/json'
         }
         })
-    .then(res => res.json())
+    .then(res => res.text())
 .then(data => {
   console.log(data);  // Keep for debugging
   if (data.status === "matched") {
@@ -92,7 +92,7 @@
 
     setTimeout(() => {
       window.location.href = data.redirect || 'scan_face.php';
-    }, 2000);
+    }, 1000);
   } else {
     responseText.innerText = data.message || "No match found.";
     responseText.className = "error";
