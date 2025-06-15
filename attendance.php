@@ -1,9 +1,6 @@
 <?php
 date_default_timezone_set("Asia/Kuala_Lumpur");
 
-$input = json_decode(file_get_contents("php://input"), true);
-$action = $input['action'] ?? $_POST['action'] ?? $_GET['action'] ?? null;
-
 class Attendance {
     private $db;
     private $emp_id;
@@ -48,7 +45,7 @@ class Attendance {
         return "Clock Out Success! Employee: " . $this->emp_id . " at " . $this->current_time;
     }
 
-    public function hasClockedInToday() {
+    private function hasClockedInToday() {
         $sql = "SELECT 1 FROM face_recognition WHERE emp_id = ? AND attendance_date = ? AND action = 'clock_in'";
         $stmt = $this->db->conn->prepare($sql);
         $stmt->bind_param("ss", $this->emp_id, $this->today_date);
@@ -59,7 +56,7 @@ class Attendance {
         return $hasClockIn;
     }
 
-    public function updateDailySummary($action) {
+    private function updateDailySummary($action) {
         if ($action == 'clock_in') {
             $sql = "INSERT INTO daily_summary (emp_id, first_clock_in, attendance_date)
                     VALUES (?, ?, ?)
@@ -80,41 +77,4 @@ class Attendance {
         $stmt->close();
     }
 }
-
-if (!empty($output)) {
-    $matched_emp_id = trim($output);
-    $db = new Database();
-    $attendance = new Attendance($db, $matched_emp_id);
-
-    if ($action === "clock_in") {
-        $data = $attendance->clockIn();
-
-        error_log(json_encode([
-            "redirect" => "scan_face.php",
-            "status" => "matched",
-            "employee_id" => $matched_emp_id,
-            "filename" => $result['filename'] ?? null,
-            "message" => $data,
-            "timestamp" => $data['time']
-        ]));
-        header('Content-Type: application/json');
-        echo json_encode([
-            "redirect" => "scan_face.php",
-            "status" => "matched",
-            "employee_id" => $matched_emp_id,
-            "filename" => $result['filename'] ?? null,
-            "message" => $data,
-            "timestamp" => $data['time']
-        ]);
-    } elseif ($action === "clock_out") {
-    } else {
-        echo "Invalid action.";
-    }
-
-    $db->close();
-} else {
-    echo "Error: No match found!";
-}
-
-
 ?>
